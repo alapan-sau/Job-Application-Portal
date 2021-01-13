@@ -1,18 +1,18 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-
+const passport = require('passport');
 const Users = require('../model/users');
-
+const authenticate = require('../authenticate')
 const userRouter = express.Router();
 
 userRouter.use(bodyParser.json());
+
 
 userRouter.route('/')
 .get((req,res,next) => {
     Users.find({})
     .then((users) => {
-        console.log('yay\n');
         res.statusCode = 200;
         res.setHeader('Content-Type', 'application/json');
         res.json(users);
@@ -21,18 +21,8 @@ userRouter.route('/')
 })
 
 .post((req, res, next) => {
-    Users.create(req.body)
-    .then((user) => {
-        console.log('User Created ', user);
-        res.statusCode = 200;
-        res.setHeader('Content-Type', 'application/json');
-        res.json(user);
-    }, (err) => {
-        next(err)
-    })
-    .catch((err) => {
-        next(err);
-    })
+    res.statusCode = 403;
+    res.end('POST operation not supported on /Users');
 })
 
 .put((req, res, next) => {
@@ -41,50 +31,37 @@ userRouter.route('/')
 })
 
 .delete((req, res, next) => {
-    Users.remove({})
-    .then((resp) => {
-        res.statusCode = 200;
-        res.setHeader('Content-Type', 'application/json');
-        res.json(resp);
-    }, (err) => next(err))
-    .catch((err) => next(err));    
-});
-
-
-
-userRouter.route('/:UserId')
-.get((req,res,next) => {
-    Users.findById(req.params.UserId)
-    .then((User) => {
-        res.statusCode = 200;
-        res.setHeader('Content-Type', 'application/json');
-        res.json(User);
-    }, (err) => next(err))
-    .catch((err) => next(err));
-})
-.post((req, res, next) => {
     res.statusCode = 403;
-    res.end('POST operation not supported on /Users/'+ req.params.UserId);
-})
-.put((req, res, next) => {
-    Users.findByIdAndUpdate(req.params.UserId, {
-        $set: req.body
-    }, { new: true })
-    .then((User) => {
-        res.statusCode = 200;
-        res.setHeader('Content-Type', 'application/json');
-        res.json(User);
-    }, (err) => next(err))
-    .catch((err) => next(err));
-})
-.delete((req, res, next) => {
-    Users.findByIdAndRemove(req.params.UserId)
-    .then((resp) => {x
-        res.statusCode = 200;
-        res.setHeader('Content-Type', 'application/json');
-        res.json(resp);
-    }, (err) => next(err))
-    .catch((err) => next(err));
+    res.end('PUT operation not supported on /Users');
 });
+
+
+userRouter.post('/signup', (req, res, next) => {
+    var password = req.body.password;
+    delete req.body.password;
+    Users.register(new Users(req.body),
+    password, (err, user) => {
+        if(err) {
+        res.statusCode = 500;
+        res.setHeader('Content-Type', 'application/json');
+        res.json({err: err});
+        }
+        else {
+            passport.authenticate('local')(req, res, () => {
+                res.statusCode = 200;
+                res.setHeader('Content-Type', 'application/json');
+                res.json({success: true, status: 'Registration Successful!'});
+            });
+        }
+    });
+ });
+
+userRouter.post('/login', passport.authenticate('local'), (req, res) => {
+    const token = authenticate.getToken({_id: req.user._id});
+    res.statusCode = 200;
+    res.setHeader('Content-Type', 'application/json');
+    res.json({success: true, token: token, status: 'You are successfully logged in!'});
+});
+
 
 module.exports = userRouter;

@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 require('mongoose-type-email');
+var passportLocalMongoose = require('passport-local-mongoose');
 
 var ratingSchema = new Schema({
     rating:{
@@ -55,6 +56,8 @@ const userSchema = new Schema({
 },{
     timestamps: true
 });
+
+userSchema.plugin(passportLocalMongoose, {usernameField: 'email'});
 
 var Users = mongoose.model('User', userSchema);
 module.exports = Users;

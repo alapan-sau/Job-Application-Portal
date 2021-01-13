@@ -3,12 +3,15 @@ var express = require('express');
 var path = require('path');
 var logger = require('morgan');
 var mongoose = require('mongoose');
+var passport = require('passport');
+
 
 var indexRouter = require('./routes/indexRouter');
 var usersRouter = require('./routes/userRouter');
 
 var app = express();
 
+app.use(passport.initialize());
 
 // Connect to Mongodb
 const url = 'mongodb://localhost:27017/jobPortal';
