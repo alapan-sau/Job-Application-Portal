@@ -2,45 +2,45 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const passport = require('passport');
-const Users = require('../model/users');
+const Recruiters = require('../model/recruiters');
 const authenticate = require('../authenticate')
-const userRouter = express.Router();
+const recruiterRouter = express.Router();
 
-userRouter.use(bodyParser.json());
+recruiterRouter.use(bodyParser.json());
 
 
-userRouter.route('/')
+recruiterRouter.route('/')
 .get((req,res,next) => {
-    Users.find({})
-    .then((users) => {
+    Recruiters.find({})
+    .then((recruiter) => {
         res.statusCode = 200;
         res.setHeader('Content-Type', 'application/json');
-        res.json(users);
+        res.json(recruiter);
     }, (err) => next(err))
     .catch((err) => next(err));
 })
 
 .post((req, res, next) => {
     res.statusCode = 403;
-    res.end('POST operation not supported on /Users');
+    res.end('POST operation not supported on /Recruiter');
 })
 
 .put((req, res, next) => {
     res.statusCode = 403;
-    res.end('PUT operation not supported on /Users');
+    res.end('PUT operation not supported on /Recruiter');
 })
 
 .delete((req, res, next) => {
     res.statusCode = 403;
-    res.end('PUT operation not supported on /Users');
+    res.end('PUT operation not supported on /Recruiter');
 });
 
 
-userRouter.post('/signup', (req, res, next) => {
+recruiterRouter.post('/signup', (req, res, next) => {
     var password = req.body.password;
     delete req.body.password;
-    Users.register(new Users(req.body),
-    password, (err, user) => {
+    Recruiters.register(new Recruiters(req.body),
+    password, (err, recruiter) => {
         if(err) {
         res.statusCode = 500;
         res.setHeader('Content-Type', 'application/json');
@@ -56,7 +56,7 @@ userRouter.post('/signup', (req, res, next) => {
     });
  });
 
-userRouter.post('/login', passport.authenticate('userLocal'), (req, res) => {
+recruiterRouter.post('/login', passport.authenticate('recruiterLocal'), (req, res) => {
     const token = authenticate.getToken({_id: req.user._id});
     res.statusCode = 200;
     res.setHeader('Content-Type', 'application/json');
@@ -64,4 +64,4 @@ userRouter.post('/login', passport.authenticate('userLocal'), (req, res) => {
 });
 
 
-module.exports = userRouter;
+module.exports = recruiterRouter;
