@@ -8,11 +8,10 @@ const jobRouter = express.Router();
 
 jobRouter.use(bodyParser.json());
 
-
-// General GET Command to check
+// View all Jobs
 jobRouter.route('/')
-.get((req,res,next) => {
-    Jobs.find({})
+.get(authenticate.verifyUser , (req,res,next) => {
+    Jobs.find({}).populate('creator')
     .then((jobs) => {
         res.statusCode = 200;
         res.setHeader('Content-Type', 'application/json');
@@ -35,7 +34,7 @@ jobRouter.route('/')
 
 
 // GET all jobs made by self
-jobRouter.route('/all')
+jobRouter.route('/myjobs')
 .get(authenticate.verifyRecruiter, (req,res,next) => {
     Jobs.find({creator : req.user._id})
     .then((jobs)=>{

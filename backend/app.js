@@ -7,6 +7,7 @@ var passport = require('passport');
 var userRouter = require('./routes/userRouter');
 var recruiterRouter = require('./routes/recruiterRouter');
 var jobRouter = require('./routes/jobRouter');
+var applicationRouter = require('./routes/applicationRouter');
 var app = express();
 
 app.use(passport.initialize());
@@ -30,6 +31,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/users', userRouter);
 app.use('/recruiters', recruiterRouter);
 app.use('/jobs', jobRouter);
+app.use('/applications', applicationRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
