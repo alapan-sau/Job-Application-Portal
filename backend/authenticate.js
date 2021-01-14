@@ -28,21 +28,38 @@ exports.getToken = function(user) {
 var JwtStrategy = require('passport-jwt').Strategy,
     ExtractJwt = require('passport-jwt').ExtractJwt;
 
-// var opts = {}
-// opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
-// opts.secretOrKey = 'secret';
+var opts = {}
+opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
+opts.secretOrKey = 'secret';
 
-// passport.use(new JwtStrategy(opts, function(jwt_payload, done) {
-//     User.findOne({id: jwt_payload.sub}, function(err, user) {
-//         if (err) {
-//             return done(err, false);
-//         }
-//         if (user) {
-//             return done(null, user);
-//         } else {
-//             return done(null, false);
-//         }
-//     });
-// }));
+passport.use('userJWT',new JwtStrategy(opts, function(jwt_payload, done) {
+    Users.findOne({id: jwt_payload.sub}, function(err, user) {
+        if (err) {
+            return done(err, false);
+        }
+        if (user) {
+            return done(null, user);
+        } else {
+            return done(null, false);
+        }
+    });
+}));
 
-// exports.verifyUser = passport.authenticate('jwt', {session: false});
+exports.verifyUser = passport.authenticate('userJWT', {session: false});
+
+passport.use('recruiterJWT',new JwtStrategy(opts, function(jwt_payload, done) {
+    Recruiters.findOne({id: jwt_payload.sub}, function(err, user) {
+        if (err) {
+            return done(err, false);
+        }
+        if (user) {
+            return done(null, user);
+        } else {
+            return done(null, false);
+        }
+    });
+}));
+
+exports.verifyRecruiter = passport.authenticate('recruiterJWT', {session: false});
+
+
