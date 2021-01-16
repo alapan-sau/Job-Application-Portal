@@ -8,7 +8,7 @@ const userRouter = express.Router();
 
 userRouter.use(bodyParser.json());
 
-
+// GET all USERS DEV
 userRouter.route('/')
 .get((req,res,next) => {
     Users.find({})
@@ -20,22 +20,7 @@ userRouter.route('/')
     .catch((err) => next(err));
 })
 
-.post((req, res, next) => {
-    res.statusCode = 403;
-    res.end('POST operation not supported on /Users');
-})
-
-.put((req, res, next) => {
-    res.statusCode = 403;
-    res.end('PUT operation not supported on /Users');
-})
-
-.delete((req, res, next) => {
-    res.statusCode = 403;
-    res.end('PUT operation not supported on /Users');
-});
-
-
+// SIGNUP as USER
 userRouter.post('/signup', (req, res, next) => {
     var password = req.body.password;
     delete req.body.password;
@@ -44,6 +29,7 @@ userRouter.post('/signup', (req, res, next) => {
         if(err) {
         res.statusCode = 500;
         res.setHeader('Content-Type', 'application/json');
+        console.log(err); // dev
         res.json({err: err});
         }
         else {
@@ -56,7 +42,10 @@ userRouter.post('/signup', (req, res, next) => {
     });
  });
 
+
+// LOGIN as USER
 userRouter.post('/login', passport.authenticate('userLocal'), (req, res) => {
+    console.log(req.body);
     const token = authenticate.getToken({_id: req.user._id});
     res.statusCode = 200;
     res.setHeader('Content-Type', 'application/json');

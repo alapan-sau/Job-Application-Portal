@@ -8,6 +8,8 @@ const Jobs = require('../model/jobs');
 const applicationRouter = express.Router();
 applicationRouter.use(bodyParser.json());
 
+
+// GET all APP DEV
 applicationRouter.route('/')
 .get((req,res,next)=>{
     Applications.find()
@@ -19,6 +21,7 @@ applicationRouter.route('/')
     .catch((err)=>next(err));
 })
 
+// GET an APP by USER
 applicationRouter.route('/myapplication/:jobid')
 .get(authenticate.verifyUser, (req,res,next) => {
     Applications.find({job : req.params.jobid, applier : req.user._id})
@@ -30,6 +33,7 @@ applicationRouter.route('/myapplication/:jobid')
     .catch((err) => next(err));
 })
 
+// GET all USER'S applied APPS
 applicationRouter.route('/myapplications/')
 .get(authenticate.verifyUser, (req,res,next) => {
     Applications.find({applier : req.user._id})
@@ -41,6 +45,7 @@ applicationRouter.route('/myapplications/')
     .catch((err) => next(err));
 })
 
+// GET all APPLICATINS to a JOB by RECRUITER
 applicationRouter.route('/appliedto/:jobid')
 .get(authenticate.verifyRecruiter, (req,res,next) => {
     Jobs.findById(req.params.jobid)
@@ -63,6 +68,7 @@ applicationRouter.route('/appliedto/:jobid')
     .catch((err) => next(err));
 })
 
+// APPLY to a JOB by USER
 applicationRouter.route('/apply/:jobid')
 .post(authenticate.verifyUser,(req,res,next) => {
     req.body.job = req.params.jobid;

@@ -8,7 +8,7 @@ const jobRouter = express.Router();
 
 jobRouter.use(bodyParser.json());
 
-// View all Jobs
+// View all JOBS by USER
 jobRouter.route('/')
 .get(authenticate.verifyUser , (req,res,next) => {
     Jobs.find({}).populate('creator')
@@ -20,7 +20,7 @@ jobRouter.route('/')
     .catch((err) => next(err));
 })
 
-// To Add a Job
+// Add a JOB by RECRUITER
 .post(authenticate.verifyRecruiter ,(req, res, next) => {
     req.body.creator = req.user._id;
     Jobs.create(req.body)
@@ -33,7 +33,7 @@ jobRouter.route('/')
 })
 
 
-// GET all jobs made by self
+// GET all JOBS made by RECRUITER
 jobRouter.route('/myjobs')
 .get(authenticate.verifyRecruiter, (req,res,next) => {
     Jobs.find({creator : req.user._id})
@@ -46,7 +46,7 @@ jobRouter.route('/myjobs')
 });
 
 
-
+// GET a JOB created by RECRUITER
 jobRouter.route('/:jobid')
 .get(authenticate.verifyRecruiter, (req, res, next) => {
     Jobs.findById(req.params.jobid)
@@ -65,6 +65,7 @@ jobRouter.route('/:jobid')
     .catch((err) => next(err));
 })
 
+// DELETE a JOB by RECRUITER
 .delete(authenticate.verifyRecruiter, (req, res, next) => {
     Jobs.findById(req.params.jobid)
     .then((job) => {
@@ -86,6 +87,7 @@ jobRouter.route('/:jobid')
     .catch((err) => next(err));
 })
 
+// MODIFY a JOB by RECRUITER
 .put(authenticate.verifyRecruiter, (req, res, next) => {
     Jobs.findById(req.params.jobid)
     .then((job) => {

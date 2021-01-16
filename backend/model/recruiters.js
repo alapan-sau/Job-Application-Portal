@@ -17,10 +17,14 @@ const recruiterSchema = new Schema({
         required: true,
         unique: true
     },
-    contactNumber: {
+    telnum: {
         type: Number,
         min: 1
-    }
+    },
+    bio:{
+        type: String,
+        min: 1
+    },
 },{
     timestamps: true
 });

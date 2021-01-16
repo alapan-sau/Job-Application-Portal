@@ -4,15 +4,15 @@ var path = require('path');
 var logger = require('morgan');
 var mongoose = require('mongoose');
 var passport = require('passport');
+const cors = require('cors');
 var userRouter = require('./routes/userRouter');
 var recruiterRouter = require('./routes/recruiterRouter');
 var jobRouter = require('./routes/jobRouter');
 var applicationRouter = require('./routes/applicationRouter');
 var app = express();
 
-app.use(passport.initialize());
 
-// Connect to Mongodb
+// Connect to the MongoDB
 const url = 'mongodb://localhost:27017/jobPortal';
 const connect = mongoose.connect(url);
 
@@ -22,12 +22,15 @@ connect.then((db) => {
   console.log(err);
 })
 
-
+// Middlewares
+app.use(cors());
+app.use(passport.initialize());
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Routers
 app.use('/users', userRouter);
 app.use('/recruiters', recruiterRouter);
 app.use('/jobs', jobRouter);

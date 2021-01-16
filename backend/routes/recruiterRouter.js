@@ -8,7 +8,7 @@ const recruiterRouter = express.Router();
 
 recruiterRouter.use(bodyParser.json());
 
-
+// GET all RECRUITERS DEV
 recruiterRouter.route('/')
 .get((req,res,next) => {
     Recruiters.find({})
@@ -20,22 +20,8 @@ recruiterRouter.route('/')
     .catch((err) => next(err));
 })
 
-.post((req, res, next) => {
-    res.statusCode = 403;
-    res.end('POST operation not supported on /Recruiter');
-})
 
-.put((req, res, next) => {
-    res.statusCode = 403;
-    res.end('PUT operation not supported on /Recruiter');
-})
-
-.delete((req, res, next) => {
-    res.statusCode = 403;
-    res.end('PUT operation not supported on /Recruiter');
-});
-
-
+// SIGNUP a new RECRUITER
 recruiterRouter.post('/signup', (req, res, next) => {
     var password = req.body.password;
     delete req.body.password;
@@ -56,6 +42,8 @@ recruiterRouter.post('/signup', (req, res, next) => {
     });
  });
 
+
+// LOGIN a new RECRUITER
 recruiterRouter.post('/login', passport.authenticate('recruiterLocal'), (req, res) => {
     const token = authenticate.getToken({_id: req.user._id});
     res.statusCode = 200;

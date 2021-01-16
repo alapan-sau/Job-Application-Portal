@@ -18,19 +18,19 @@ var ratingSchema = new Schema({
 });
 
 var educationSchema = new Schema({
-    startYear:  {
+    start:  {
         type: Number,
         min: 1970,
         max: 2021,
         required: true
     },
-    endYear:  {
+    end:  {
         type: Number,
         min: 1970,
         max: 2030,
         required: true
     },
-    instituteName:  {
+    institute:  {
         type: String,
         required: true
     }
