@@ -4,14 +4,13 @@ import axios from 'axios';
 
 import Signup from './Signup'
 import Login from './Login'
+import CreateJob from './CreateJob'
 
 class Main extends Component{
     constructor(){
         super();
 		this.state = {
-			isLogin: false,
-			userName: null,
-			userId: null,
+			isLoggedIn: false,
 			userType: null,
 			bearerToken: null
 		};
@@ -19,34 +18,49 @@ class Main extends Component{
 		this.clogout = this.clogout.bind(this);
     }
 
-    clogin(token) {
+    clogin(token,type) {
 		console.log("Logged In")
 		// localStorage.setItem("weBuyToken", token);
 		// setAuthToken(token);
 		// const decoded = jwt_decode(token);
 		this.setState({
 			isLoggedIn: true,
-			token: 'Bearer '+token
+			bearerToken: token,
+			userType: type
 		});
-		axios.defaults.headers.common["Authorization"] = this.state.token;
-		console.log(this.state.token);
+		localStorage.setItem("japStateToken", token);
+		localStorage.setItem("japStateType", type);
+
+		// async so might not not show the expected results
+		console.log(this.state);
+		console.log(localStorage.japStateToken);
 	}
 
 	clogout() {
 		console.log("Logged Out")
-		// if (localStorage && localStorage.weBuyToken) {
-		// 	localStorage.removeItem("weBuyToken");
-		// }
+		if (localStorage && localStorage.japState) {
+			localStorage.removeItem("japState");
+		}
 		this.setState({
 			isLoggedIn: false,
 			userName: null,
 			userId: null,
 			userType: null,
-			token: null
+			bearerToken: null
 		});
 		delete axios.defaults.headers.common["Authorization"];
         return <Redirect to='/' />
-    }
+	}
+
+	componentWillMount() {
+		if(localStorage && localStorage.japStateToken && localStorage.japStateType){
+			this.clogin(localStorage.japStateToken,localStorage.japStateType);
+			axios.defaults.headers.common["Authorization"] = localStorage.japStateToken;
+		}
+		else{
+			delete axios.defaults.headers.common["Authorization"];
+		}
+	}
 
     render(){
         return (
@@ -57,15 +71,16 @@ class Main extends Component{
                   <Switch>
 				  	<Route exact path='/' component={Signup} />
 					<Route exact path='/login' component={()=><Login clogin={this.clogin}/>} />
-                    {/* <Route exact path='/users/dashboard' component={HomePage} />
-                    <Route path='/apply/:jobid' component={()=><About leaders={this.props.leaders}/>} />
+					<Route exact path="/createjob" component={CreateJob}/>
+                    {/* <Route exact path='/users/dashboard' component={HomePage} /> */}
+                    {/* <Route path='/apply/:jobid' component={()=><About leaders={this.props.leaders}/>} />
                     <Route exact path='users/myapplications' component={() => <Menu dishes={this.props.dishes} />} />
                     <Route exact path='users/update' component={() => <Menu dishes={this.props.dishes} />} />
 
                     <Route exact path='/recruiters/dashboard' component={SelectedDish} />
                     <Route exact path='/recruiters/myjobs' component= {() => <Contact resetFeedbackForm={this.props.resetFeedbackForm} postFeedback={this.props.postFeedback}/>} />
                     <Route exact path='/recruiters/update' component= {() => <Contact resetFeedbackForm={this.props.resetFeedbackForm} postFeedback={this.props.postFeedback}/>} />
-					<Redirect to="/createjob/" /> */}
+				 */}
                   </Switch>
                 {/* </CSSTransition>
               </TransitionGroup>

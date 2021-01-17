@@ -26,27 +26,35 @@ const jobSchema = new Schema({
     },
     deadline: {
         type: Date,
-
+        required: true
     },
     type: {
         type: String,
-
     },
     salary: {
         type: Number,
-
+        required: true
     },
     maxAppli: {
         type: Number,
-
+        required: true
     },
     maxPos: {
         type: Number,
-
+        required: true
     },
     duration: {
         type: Number,
-
+        required: true
+    },
+    skills:[String],
+    remAppli:{
+        type: Number,
+        required: true
+    },
+    remPos:{
+        type: Number,
+        required: true
     },
     rating:[ratingSchema]
 },{

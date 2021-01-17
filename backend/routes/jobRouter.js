@@ -23,6 +23,9 @@ jobRouter.route('/')
 // Add a JOB by RECRUITER
 .post(authenticate.verifyRecruiter ,(req, res, next) => {
     req.body.creator = req.user._id;
+    req.body.remAppli = req.body.maxAppli;
+    req.body.remPos = req.body.maxPos;
+    console.log(req);
     Jobs.create(req.body)
     .then((jobs) => {
         res.statusCode = 200;

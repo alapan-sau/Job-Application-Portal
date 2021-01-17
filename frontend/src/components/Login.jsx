@@ -44,7 +44,7 @@ class Login extends Component{
             alert(JSON.stringify(response));
             console.log( response);
             // window.location.replace("http://localhost:3000/users/login");
-            this.props.clogin(response.data.token);
+            this.props.clogin('Bearer '+response.data.token,'user');
         }).catch(error => {
             alert(JSON.stringify(error.response));
             if (error) {
@@ -68,6 +68,7 @@ class Login extends Component{
             alert(JSON.stringify(response));
             console.log(response);
             // window.location.replace("http://localhost:3000/users/login");
+            this.props.clogin('Bearer '+response.data.token,'recruiter');
         }).catch(error => {
             alert(error.response);
             if (error) {
