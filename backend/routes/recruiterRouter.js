@@ -45,6 +45,7 @@ recruiterRouter.post('/signup', (req, res, next) => {
 
 // LOGIN a new RECRUITER
 recruiterRouter.post('/login', passport.authenticate('recruiterLocal'), (req, res) => {
+    console.log(req.user);
     const token = authenticate.getToken({_id: req.user._id});
     res.statusCode = 200;
     res.setHeader('Content-Type', 'application/json');

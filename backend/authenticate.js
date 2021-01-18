@@ -22,7 +22,7 @@ if(user!=null)
 
 exports.getToken = function(user) {
     return jwt.sign(user, 'secret',
-        {expiresIn: 3600});
+        {expiresIn: "12h"});
 };
 
 var JwtStrategy = require('passport-jwt').Strategy,
@@ -33,11 +33,12 @@ opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
 opts.secretOrKey = 'secret';
 
 passport.use('userJWT',new JwtStrategy(opts, function(jwt_payload, done) {
-    Users.findOne({id: jwt_payload.sub}, function(err, user) {
+    Users.findOne({_id: jwt_payload._id}, function(err, user) {
         if (err) {
             return done(err, false);
         }
         if (user) {
+            console.log(user);
             return done(null, user);
         } else {
             return done(null, false);
@@ -48,7 +49,7 @@ passport.use('userJWT',new JwtStrategy(opts, function(jwt_payload, done) {
 exports.verifyUser = passport.authenticate('userJWT', {session: false});
 
 passport.use('recruiterJWT',new JwtStrategy(opts, function(jwt_payload, done) {
-    Recruiters.findOne({id: jwt_payload.sub}, function(err, user) {
+    Recruiters.findOne({_id: jwt_payload._id}, function(err, user) {
         if (err) {
             return done(err, false);
         }

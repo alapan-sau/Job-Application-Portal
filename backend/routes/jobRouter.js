@@ -11,6 +11,8 @@ jobRouter.use(bodyParser.json());
 // View all JOBS by USER
 jobRouter.route('/')
 .get(authenticate.verifyUser , (req,res,next) => {
+    console.log(req.user.email);
+    console.log(req.user);
     Jobs.find({}).populate('creator')
     .then((jobs) => {
         res.statusCode = 200;
@@ -22,6 +24,8 @@ jobRouter.route('/')
 
 // Add a JOB by RECRUITER
 .post(authenticate.verifyRecruiter ,(req, res, next) => {
+    console.log(req.user.email);
+    console.log(req.user);
     req.body.creator = req.user._id;
     req.body.remAppli = req.body.maxAppli;
     req.body.remPos = req.body.maxPos;
@@ -39,6 +43,7 @@ jobRouter.route('/')
 // GET all JOBS made by RECRUITER
 jobRouter.route('/myjobs')
 .get(authenticate.verifyRecruiter, (req,res,next) => {
+    console.log(req.user);
     Jobs.find({creator : req.user._id})
     .then((jobs)=>{
         res.statusCode = 200;
@@ -52,6 +57,7 @@ jobRouter.route('/myjobs')
 // GET a JOB created by RECRUITER
 jobRouter.route('/:jobid')
 .get(authenticate.verifyRecruiter, (req, res, next) => {
+    console.log(req.user);
     Jobs.findById(req.params.jobid)
     .then((job) => {
         if(job.creator.toString() == req.user._id.toString()){

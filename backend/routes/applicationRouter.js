@@ -2,9 +2,10 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const passport = require('passport');
-const Applications = require('../model/Applications');
+const Applications = require('../model/applications');
 const authenticate = require('../authenticate');
 const Jobs = require('../model/jobs');
+const Users = require('../model/users');
 const applicationRouter = express.Router();
 applicationRouter.use(bodyParser.json());
 
@@ -71,15 +72,43 @@ applicationRouter.route('/appliedto/:jobid')
 // APPLY to a JOB by USER
 applicationRouter.route('/apply/:jobid')
 .post(authenticate.verifyUser,(req,res,next) => {
-    req.body.job = req.params.jobid;
-    req.body.applier = req.user._id;
-    Applications.create(req.body)
-    .then((apps) => {
-        res.statusCode = 200;
-        res.setHeader('Content-Type', 'application/json');
-        res.json(apps);
+    Users.findById(res.user._id)
+    .then((user)=>{
+        if(user.totalApplications >= 10){
+            err = new Error('Already reached maximum number of applications');
+            err.status = 403;
+            return next(err);
+        }
+        Jobs.findById(req.params.jobid)
+        .then((job)=>{
+            if(job.remAppli <= 0){
+                err = new Error('Already reached maximum number of applications');
+                err.status = 403;
+                return next(err);
+            }
+            req.body.job = req.params.jobid;
+            req.body.applier = req.user._id;
+            Applications.create(req.body)
+            .then((apps) => {
+                var newApplicationsNumber = user.totalApplications+1;
+                Users.findByIdAndUpdate(req.user._id ,{ totalApplications: newApplicationsNumber })
+                .then(()=>{
+                    var rem = job.remAppli
+                    Jobs.findById(job._id,{remAppli:rem})
+                    .then(()=>{
+                        res.statusCode = 200;
+                        res.setHeader('Content-Type', 'application/json');
+                        res.json(apps);
+                    }, (err) => next(err))
+                    .catch((err) => next(err));
+                }, (err) => next(err))
+                .catch((err) => next(err));
+            }, (err) => next(err))
+            .catch((err) => next(err));
+        }, (err)=>next(err))
+        .catch((err)=>next(err));
     }, (err) => next(err))
     .catch((err) => next(err));
-})
+});
 
 module.exports = applicationRouter;

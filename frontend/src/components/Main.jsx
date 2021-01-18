@@ -2,9 +2,11 @@ import React, { Component } from 'react';
 import { BrowserRouter as Router, Route, Link , Switch, Redirect} from "react-router-dom";
 import axios from 'axios';
 
-import Signup from './Signup'
-import Login from './Login'
-import CreateJob from './CreateJob'
+import Signup from './Signup';
+import Login from './Login';
+import CreateJob from './CreateJob';
+import DashboardUser from './DashboardUser';
+
 
 class Main extends Component{
     constructor(){
@@ -52,7 +54,7 @@ class Main extends Component{
         return <Redirect to='/' />
 	}
 
-	componentWillMount() {
+	componentWillMount(){
 		if(localStorage && localStorage.japStateToken && localStorage.japStateType){
 			this.clogin(localStorage.japStateToken,localStorage.japStateType);
 			axios.defaults.headers.common["Authorization"] = localStorage.japStateToken;
@@ -63,6 +65,8 @@ class Main extends Component{
 	}
 
     render(){
+		console.log('This is state');
+		console.log(this.state);
         return (
             <div>
               {/* <Header />
@@ -72,7 +76,7 @@ class Main extends Component{
 				  	<Route exact path='/' component={Signup} />
 					<Route exact path='/login' component={()=><Login clogin={this.clogin}/>} />
 					<Route exact path="/createjob" component={CreateJob}/>
-                    {/* <Route exact path='/users/dashboard' component={HomePage} /> */}
+                    <Route exact path='/users/dashboard' component={DashboardUser} />
                     {/* <Route path='/apply/:jobid' component={()=><About leaders={this.props.leaders}/>} />
                     <Route exact path='users/myapplications' component={() => <Menu dishes={this.props.dishes} />} />
                     <Route exact path='users/update' component={() => <Menu dishes={this.props.dishes} />} />

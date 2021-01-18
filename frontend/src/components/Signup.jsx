@@ -168,7 +168,7 @@ class Signup extends Component{
                 <Label htmlFor="type" md={2}></Label>
                 <Col md={3}>
                     <Input type="select" name={skIdx} value={this.state.skill[idx]} onChange={this.handleInputChange}>
-                        <option> Select Type</option>
+                        <option value=''> Select Type</option>
                         <option>C++</option>
                         <option>Python</option>
                     </Input>

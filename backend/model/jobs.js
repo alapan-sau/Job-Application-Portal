@@ -47,7 +47,7 @@ const jobSchema = new Schema({
         type: Number,
         required: true
     },
-    skills:[String],
+    skill:[String],
     remAppli:{
         type: Number,
         required: true

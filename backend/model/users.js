@@ -53,6 +53,10 @@ const userSchema = new Schema({
     education: [educationSchema],
     rating: [ratingSchema],
     skills: [String],
+    totalApplications: {
+        type : Number,
+        required: true
+    }
 },{
     timestamps: true
 });

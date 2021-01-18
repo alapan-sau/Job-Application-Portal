@@ -24,6 +24,7 @@ userRouter.route('/')
 userRouter.post('/signup', (req, res, next) => {
     var password = req.body.password;
     delete req.body.password;
+    req.body.totalApplications = 0;
     Users.register(new Users(req.body),
     password, (err, user) => {
         if(err) {
@@ -45,12 +46,18 @@ userRouter.post('/signup', (req, res, next) => {
 
 // LOGIN as USER
 userRouter.post('/login', passport.authenticate('userLocal'), (req, res) => {
-    console.log(req.body);
+    // req.login();
+    console.log(req.user);
     const token = authenticate.getToken({_id: req.user._id});
     res.statusCode = 200;
     res.setHeader('Content-Type', 'application/json');
     res.json({success: true, token: token, status: 'You are successfully logged in!'});
 });
 
+// userRouter.get('/logout',function (req, res){
+//     req.logout();
+//     req.user = null;
+//     res.json('Bye'); //Inside a callback… bulletproof!
+// });
 
 module.exports = userRouter;
