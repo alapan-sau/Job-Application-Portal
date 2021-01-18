@@ -54,6 +54,38 @@ userRouter.post('/login', passport.authenticate('userLocal'), (req, res) => {
     res.json({success: true, token: token, status: 'You are successfully logged in!'});
 });
 
+userRouter.route('/me')
+.get(authenticate.verifyUser,(req,res,next) => {
+    Users.findById(req.user._id)
+    .then((users) => {
+        res.statusCode = 200;
+        res.setHeader('Content-Type', 'application/json');
+        res.json(users);
+    }, (err) => next(err))
+    .catch((err) => next(err))
+})
+
+.put(authenticate.verifyUser,(req,res,next)=>{
+    Users.findByIdAndUpdate(req.user._id,{$set: req.body},{new: true})
+    .then((user)=>{
+        res.statusCode = 200;
+        res.setHeader('Content-Type', 'application/json');
+        res.json(user);
+    },(err) => next(err))
+    .catch((err)=>next(err))
+});
+
+// .put(authenticate.verifyUser, (req, res, next) => {
+//     Users.findByIdAndUpdate(req.user._id, {$set: req.body}, {new: true})
+//     .then((user)=> {
+//         res.statusCode = 200;
+//         res.setHeader('Content-Type', 'application/json');
+//         res.json(user);
+//     }, (err) => next(err))
+//     .catch((err) => next(err))
+// })
+
+
 // userRouter.get('/logout',function (req, res){
 //     req.logout();
 //     req.user = null;

@@ -22,6 +22,19 @@ applicationRouter.route('/')
     .catch((err)=>next(err));
 })
 
+
+// POST all APP DEV
+applicationRouter.route('/')
+.post((req,res,next)=>{
+    Applications.create(req.body)
+    .then((apps)=>{
+        res.statusCode = 200;
+        res.setHeader('Content-Type', 'application/json');
+        res.json(apps);
+    },(err)=>next(err))
+    .catch((err)=>next(err));
+})
+
 // GET an APP by USER
 applicationRouter.route('/myapplication/:jobid')
 .get(authenticate.verifyUser, (req,res,next) => {
@@ -37,7 +50,7 @@ applicationRouter.route('/myapplication/:jobid')
 // GET all USER'S applied APPS
 applicationRouter.route('/myapplications/')
 .get(authenticate.verifyUser, (req,res,next) => {
-    Applications.find({applier : req.user._id})
+    Applications.find({applier : req.user._id}).populate('job')
     .then((apps) => {
         res.statusCode = 200;
         res.setHeader('Content-Type', 'application/json');
@@ -72,8 +85,10 @@ applicationRouter.route('/appliedto/:jobid')
 // APPLY to a JOB by USER
 applicationRouter.route('/apply/:jobid')
 .post(authenticate.verifyUser,(req,res,next) => {
-    Users.findById(res.user._id)
+    console.log("1 here")
+    Users.findById(req.user._id)
     .then((user)=>{
+        console.log("2 here")
         if(user.totalApplications >= 10){
             err = new Error('Already reached maximum number of applications');
             err.status = 403;
@@ -81,21 +96,27 @@ applicationRouter.route('/apply/:jobid')
         }
         Jobs.findById(req.params.jobid)
         .then((job)=>{
+            console.log("3 here")
             if(job.remAppli <= 0){
                 err = new Error('Already reached maximum number of applications');
                 err.status = 403;
                 return next(err);
             }
+            console.log("4 here")
             req.body.job = req.params.jobid;
             req.body.applier = req.user._id;
+            req.body.rated = false;
             Applications.create(req.body)
             .then((apps) => {
+                console.log("5 here")
                 var newApplicationsNumber = user.totalApplications+1;
                 Users.findByIdAndUpdate(req.user._id ,{ totalApplications: newApplicationsNumber })
                 .then(()=>{
-                    var rem = job.remAppli
+                    console.log("6 here")
+                    var rem = job.remAppli - 1;
                     Jobs.findById(job._id,{remAppli:rem})
                     .then(()=>{
+                        console.log("7 here")
                         res.statusCode = 200;
                         res.setHeader('Content-Type', 'application/json');
                         res.json(apps);

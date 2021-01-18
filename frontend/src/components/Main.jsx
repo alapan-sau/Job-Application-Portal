@@ -6,6 +6,8 @@ import Signup from './Signup';
 import Login from './Login';
 import CreateJob from './CreateJob';
 import DashboardUser from './DashboardUser';
+import ViewApplications from './ViewApplications';
+import UpdateUser from './UpdateUser';
 
 
 class Main extends Component{
@@ -77,6 +79,8 @@ class Main extends Component{
 					<Route exact path='/login' component={()=><Login clogin={this.clogin}/>} />
 					<Route exact path="/createjob" component={CreateJob}/>
                     <Route exact path='/users/dashboard' component={DashboardUser} />
+					<Route exact path='/users/myapplications' component={ViewApplications} />
+					<Route exact path='/users/update' component={UpdateUser} />
                     {/* <Route path='/apply/:jobid' component={()=><About leaders={this.props.leaders}/>} />
                     <Route exact path='users/myapplications' component={() => <Menu dishes={this.props.dishes} />} />
                     <Route exact path='users/update' component={() => <Menu dishes={this.props.dishes} />} />

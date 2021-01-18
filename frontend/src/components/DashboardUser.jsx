@@ -205,9 +205,11 @@ class DashboardUser extends Component{
 
     render(){
         console.log(this.state.tempJoblist);
+        console.log(this.state.applist)
+
         let allApp = this.state.applist;
         let allAppliedJob = allApp.map((app)=>{
-            return(app.job);
+            return(app.job._id);
         })
 
         let allJob = this.state.tempJoblist;
@@ -232,7 +234,7 @@ class DashboardUser extends Component{
                 usedButton = ButtonApplied
             }
             else{
-                if(remAppli==0 && remPos==0){
+                if(remAppli==0 || remPos==0){
                     usedButton = ButtonFull
                 }
                 else{
@@ -253,6 +255,7 @@ class DashboardUser extends Component{
                     <CardText>Job Creator : {job.creator.email}</CardText>
                     <CardText>Salary : {job.salary}</CardText>
                     <CardText>Duration : {job.duration}</CardText>
+                    <CardText>Rating : {job.rating}</CardText>
 
                     {usedButton}
                   </Card>

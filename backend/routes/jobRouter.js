@@ -3,7 +3,8 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const passport = require('passport');
 const Jobs = require('../model/jobs');
-const authenticate = require('../authenticate')
+const authenticate = require('../authenticate');
+const Applications = require('../model/applications');
 const jobRouter = express.Router();
 
 jobRouter.use(bodyParser.json());
@@ -29,6 +30,8 @@ jobRouter.route('/')
     req.body.creator = req.user._id;
     req.body.remAppli = req.body.maxAppli;
     req.body.remPos = req.body.maxPos;
+    req.body.totalRaters = 0;
+    req.body.rating = 0;
     console.log(req);
     Jobs.create(req.body)
     .then((jobs) => {
@@ -118,6 +121,40 @@ jobRouter.route('/:jobid')
     .catch((err) => next(err));
 });
 
+
+jobRouter.route('/rate/:appid')
+// RATE a JOB
+.post(authenticate.verifyUser, (req, res, next) => {
+    console.log(req.body);
+    Applications.findByIdAndUpdate(req.params.appid,{rated:true}).populate('job')
+    .then((app) => {
+        jobid = app.job._id;
+        jobrater = Number(app.job.totalRaters);
+        jobrating = app.job.rating;
+        newrate = Number(req.body.rate);
+
+        console.log(newrate);
+        if(jobrating===0 || jobrating===null){
+            console.log("here")
+            jobrating = newrate;
+            jobrater=jobrater+1;
+            console.log(jobrating);
+        }
+        else{
+            console.log("here else")
+            jobrating = (jobrating*jobrater + newrate)/(jobrater+1);
+            jobrater = jobrater+1;
+        }
+        Jobs.findByIdAndUpdate(jobid,{rating : jobrating}, {totalRaters: jobrater})
+        .then(()=>{
+            res.statusCode = 200;
+            res.setHeader('Content-Type', 'application/json');
+            res.json('Rating Done');
+        },(err)=>next(err))
+        .catch((err)=>next(err));
+    }, (err) => next(err))
+    .catch((err) => next(err));
+});
 
 
 module.exports = jobRouter;

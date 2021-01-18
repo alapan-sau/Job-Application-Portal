@@ -13,7 +13,14 @@ const applicationSchema = new Schema({
     job: {
         type : mongoose.Schema.Types.ObjectId,
         ref: 'Job'
+    },
+    status:{
+        type : String
+    },
+    rated:{
+        type:Boolean
     }
+
 },{
     timestamps: true
 });

@@ -3,20 +3,6 @@ const Schema = mongoose.Schema;
 require('mongoose-type-email');
 var passportLocalMongoose = require('passport-local-mongoose');
 
-var ratingSchema = new Schema({
-    rating:{
-        type: Number,
-        min: 0,
-        max: 5
-    },
-    author: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Recruiter'
-    }
-},  {
-        timestamps: true
-});
-
 var educationSchema = new Schema({
     start:  {
         type: Number,
@@ -51,7 +37,9 @@ const userSchema = new Schema({
         unique: true
     },
     education: [educationSchema],
-    rating: [ratingSchema],
+    rating:{
+        type: Number
+    },
     skills: [String],
     totalApplications: {
         type : Number,
