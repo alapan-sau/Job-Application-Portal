@@ -13,7 +13,7 @@ class DashboardUser extends Component{
             joblist:[],
             tempJoblist:[],
             applist:[],
-            sortBy:null,
+            sortBy:'',
             sortOrder:'desc',
             salaryLow:null,
             salaryHigh:null,
@@ -152,7 +152,7 @@ class DashboardUser extends Component{
     }
 
     clear(){
-        window.location.reload()
+        this.getData();
     }
 
     getData(){
@@ -256,7 +256,6 @@ class DashboardUser extends Component{
                     <CardText>Salary : {job.salary}</CardText>
                     <CardText>Duration : {job.duration}</CardText>
                     <CardText>Rating : {job.rating}</CardText>
-
                     {usedButton}
                   </Card>
                 </Col>
@@ -295,6 +294,10 @@ class DashboardUser extends Component{
                     <Col md={3}>
                     <Input type="number" name="salaryLow"value={this.state.salaryLow} onChange={this.handleInputChange}></Input>
                     <Input type="number" name="salaryHigh"value={this.state.salaryHigh} onChange={this.handleInputChange}></Input>
+                    </Col>
+                    <Label htmlFor="durationMax" md={2}>Duration</Label>
+                    <Col md={3}>
+                    <Input type="number" name="durationMax"value={this.state.duration} onChange={this.handleInputChange}></Input>
                     </Col>
                     </FormGroup>
                     <FormGroup row >

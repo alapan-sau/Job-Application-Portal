@@ -53,4 +53,27 @@ recruiterRouter.post('/login', passport.authenticate('recruiterLocal'), (req, re
 });
 
 
+// GET info about SELF
+recruiterRouter.route('/me')
+.get(authenticate.verifyRecruiter,(req,res,next) => {
+    Recruiters.findById(req.user._id)
+    .then((users) => {
+        res.statusCode = 200;
+        res.setHeader('Content-Type', 'application/json');
+        res.json(users);
+    }, (err) => next(err))
+    .catch((err) => next(err))
+})
+
+// UPDATE SELF
+.put(authenticate.verifyRecruiter,(req,res,next)=>{
+    Recruiters.findByIdAndUpdate(req.user._id,{$set: req.body},{new: true})
+    .then((user)=>{
+        res.statusCode = 200;
+        res.setHeader('Content-Type', 'application/json');
+        res.json(user);
+    },(err) => next(err))
+    .catch((err)=>next(err))
+});
+
 module.exports = recruiterRouter;

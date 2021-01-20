@@ -57,10 +57,12 @@ const jobSchema = new Schema({
         required: true
     },
     rating:{
-        type: Number
+        type: Number,
+        default: 0,
     },
     totalRaters:{
-        type:Number
+        type:Number,
+        default :0
     }
 },{
     timestamps: true

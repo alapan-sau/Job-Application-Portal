@@ -115,11 +115,13 @@ class ViewApplications extends Component{
             let title = app.job.title;
             let jid = app.job._id;
 
-            let ButtonRate;
+            let ButtonRate=<Button></Button>;
             if(app.status==='pending')ButtonRate = <Button>Pending</Button>
             else if(app.status==='selected' && app.rated===false) ButtonRate = <Button id={app._id} onClick={this.toggleModal}>You are Selected, Rate</Button>
-            else if(app.status==='selected' && app.rated===true) ButtonRate = <Button >Rated</Button>
-            else ButtonRate = <Button>Shortlisted</Button>
+            else if(app.status==='selected' && app.rated===true) ButtonRate = <Button >Selected, Already Rated</Button>
+            else if(app.status==='shortlisted') ButtonRate = <Button >Shortlisted </Button>
+            else if(app.status==='rejected') ButtonRate = <Button >Rejected </Button>
+
 
             return(
                 <Row>
@@ -130,8 +132,9 @@ class ViewApplications extends Component{
                     <CardText>Type of Job : {app.job.type}</CardText>
                     <CardText>Duration : {app.job.duration}</CardText>
                     <CardText>SOP : {app.sop}</CardText>
-                    <CardText>Rated: {app.rated}</CardText>
+                    <CardText>Rated: {String(app.rated)}</CardText>
                     <CardText>Status : {app.status}</CardText>
+                    <CardText>Rating: {app.job.rating}</CardText>
                     {ButtonRate}
                   </Card>
                 </Col>
@@ -146,7 +149,7 @@ class ViewApplications extends Component{
                     <Form>
                         <FormGroup>
                             <Label htmlFor="rate">Rating</Label>
-                            <Input type="select" id="rate" name="rate"  onChange={this.handleInputChange}>
+                            <Input type="select" id="rate" name="rate"  value={this.state.rate} onChange={this.handleInputChange}>
                             <option>1</option>
                             <option>2</option>
                             <option>3</option>

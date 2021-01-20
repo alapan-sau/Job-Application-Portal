@@ -73,8 +73,6 @@ class Login extends Component{
             alert(error.response);
             if (error) {
                 console.log(error.response);
-                // this.setState({isError: true});
-                // this.setState({errors: error.response.data});
             }
         });
     }

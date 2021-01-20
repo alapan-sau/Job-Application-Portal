@@ -19,8 +19,14 @@ const applicationSchema = new Schema({
     },
     rated:{
         type:Boolean
+    },
+    ratedApplicant:{
+        type:Boolean,
+        default:false
+    },
+    dateOfJoining:{
+        type:Date
     }
-
 },{
     timestamps: true
 });

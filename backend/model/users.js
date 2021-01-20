@@ -44,6 +44,20 @@ const userSchema = new Schema({
     totalApplications: {
         type : Number,
         required: true
+    },
+    rating:{
+        type:Number,
+        required: true,
+        default: 0
+    },
+    selected:{
+        type:Boolean,
+        default:false
+    },
+    totalRaters:{
+        type:Number,
+        default:0,
+        required:true
     }
 },{
     timestamps: true

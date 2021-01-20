@@ -5,6 +5,7 @@ const passport = require('passport');
 const Jobs = require('../model/jobs');
 const authenticate = require('../authenticate');
 const Applications = require('../model/applications');
+const Users = require('../model/users');
 const jobRouter = express.Router();
 
 jobRouter.use(bodyParser.json());
@@ -77,33 +78,79 @@ jobRouter.route('/:jobid')
     .catch((err) => next(err));
 })
 
+
 // DELETE a JOB by RECRUITER
 .delete(authenticate.verifyRecruiter, (req, res, next) => {
     Jobs.findById(req.params.jobid)
     .then((job) => {
         if(job.creator.toString() == req.user._id.toString()){
-            Jobs.findByIdAndDelete(req.params.jobid)
-            .then((job)=>{
-                res.statusCode = 200;
-                res.setHeader('Content-Type', 'application/json');
-                res.json(job);
-            } ,(err) => next(err))
-            .catch((err)=>next(err));
+            Applications.find({job:req.params.jobid}).populate('applier')
+            .then((apps)=>{
+                console.log(apps);
+
+                apps = apps.filter((app)=>{
+                    return(app.applier.status!=='rejected')
+                })
+                let users = apps.map((element) => {
+                    return element.applier._id;
+                });
+                selectedApps = apps.filter((element) => {
+                    return (element.status==="selected");
+                });
+
+                let selectedUsers = apps.map((element)=>{
+                    return element.applier._id;
+                })
+                Users.updateMany({"_id": {"$in":users}},{$inc:{ totalApplications: -1}})
+                .then(()=>{
+                    Users.updateMany({"_id": {"$in":selectedUsers}}, {selected:false})
+                    .then(()=>{
+                        Applications.deleteMany({job: req.params.jobid})
+                        .then(()=>{
+                            Jobs.findByIdAndDelete(req.params.jobid)
+                            .then(()=>{
+                                res.statusCode = 200;
+                                res.setHeader('Content-Type', 'application/json');
+                                res.json("Done");
+                            }, (err) => next(err))
+                            .catch((err) => next(err));
+                        }, (err) => next(err))
+                        .catch((err) => next(err));
+                    }, (err) => next(err))
+                    .catch((err) => next(err));
+                },(err) => next(err))
+                .catch((err) => next(err));
+            },(err) => next(err))
+            .catch((err) => next(err));
         }
         else{
-            res.statusCode = 403;
-            res.setHeader('Content-Type', 'application/json');
-            res.json('Not allowed');
+            err = new Error("Unauthorised");
+            err.status(401);
+            return next(err)
         }
     }, (err) => next(err))
     .catch((err) => next(err));
 })
+
+
 
 // MODIFY a JOB by RECRUITER
 .put(authenticate.verifyRecruiter, (req, res, next) => {
     Jobs.findById(req.params.jobid)
     .then((job) => {
         if(job.creator.toString() == req.user._id.toString()){
+            if(job.maxAppli - job.remAppli > req.body.maxAppli){
+                res.statusCode = 403;
+                res.setHeader('Content-Type', 'application/json');
+                res.json('Making Maximim Application less than Current Applications');
+            }
+            if(job.maxPos - job.remPos > req.body.maxPos){
+                res.statusCode = 403;
+                res.setHeader('Content-Type', 'application/json');
+                res.json('Making Maximum Position less than Current filled Positions');
+            }
+            req.body.remPos = req.body.maxPos-(job.maxPos - job.remPos);
+            req.body.remAppli = req.body.maxAppli-(job.maxAppli - job.remAppli);
             Jobs.findByIdAndUpdate(req.params.jobid,{$set:req.body},{new:true})
             .then((job)=>{
                 res.statusCode = 200;
@@ -130,8 +177,10 @@ jobRouter.route('/rate/:appid')
     .then((app) => {
         jobid = app.job._id;
         jobrater = Number(app.job.totalRaters);
-        jobrating = app.job.rating;
+        jobrating = Number(app.job.rating);
         newrate = Number(req.body.rate);
+
+        console.log(jobrater,jobrating, newrate);
 
         console.log(newrate);
         if(jobrating===0 || jobrating===null){
@@ -142,10 +191,11 @@ jobRouter.route('/rate/:appid')
         }
         else{
             console.log("here else")
+
             jobrating = (jobrating*jobrater + newrate)/(jobrater+1);
             jobrater = jobrater+1;
         }
-        Jobs.findByIdAndUpdate(jobid,{rating : jobrating}, {totalRaters: jobrater})
+        Jobs.findByIdAndUpdate(jobid,{rating : jobrating , totalRaters: jobrater})
         .then(()=>{
             res.statusCode = 200;
             res.setHeader('Content-Type', 'application/json');

@@ -232,13 +232,13 @@ class Signup extends Component{
                     <FormGroup row>
                         <Label htmlFor="telnum" md={2}>Contact Number</Label>
                         <Col md={10}>
-                            <Input type="tel" id="telnum" name="telnum" placeholder="Contact Number" onChange={this.handleInputChange} />
+                            <Input type="tel" id="telnum" name="telnum" value={this.state.telnum} placeholder="Contact Number" onChange={this.handleInputChange} />
                         </Col>
                     </FormGroup>
                     <FormGroup row>
                         <Label htmlFor="bio" md={2}>Your Bio</Label>
                         <Col md={10}>
-                            <Input type="textarea" id="bio" name="bio" rows="6" onChange={this.handleInputChange} ></Input>
+                            <Input type="textarea" id="bio" name="bio" rows="6" value={this.state.bio} onChange={this.handleInputChange} ></Input>
                         </Col>
                     </FormGroup>
                 </div>

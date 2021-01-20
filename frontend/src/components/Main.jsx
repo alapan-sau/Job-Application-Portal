@@ -8,7 +8,10 @@ import CreateJob from './CreateJob';
 import DashboardUser from './DashboardUser';
 import ViewApplications from './ViewApplications';
 import UpdateUser from './UpdateUser';
-
+import UpdateRecruiter from './UpdateRecruiter';
+import DashboardRecruiter from './DashboardRecruiter';
+import SelectedJobApps from './SelectedJobApps';
+import SelectedApplications from './SelectedApplicants';
 
 class Main extends Component{
     constructor(){
@@ -69,6 +72,15 @@ class Main extends Component{
     render(){
 		console.log('This is state');
 		console.log(this.state);
+
+		const SelectedJob = ({match}) => {
+			console.log('here');
+			console.log(match);
+			console.log('Iam');
+			return(
+			    <SelectedJobApps jobid={match.params.jobid}/>
+			);
+		}
         return (
             <div>
               {/* <Header />
@@ -81,6 +93,10 @@ class Main extends Component{
                     <Route exact path='/users/dashboard' component={DashboardUser} />
 					<Route exact path='/users/myapplications' component={ViewApplications} />
 					<Route exact path='/users/update' component={UpdateUser} />
+					<Route exact path='/recruiters/update' component={UpdateRecruiter} />
+					<Route exact path='/recruiters/dashboard' component={DashboardRecruiter} />
+					<Route exact path='/recruiters/:jobid' component={SelectedJob} />
+					<Route exact path='/applications/selected' component={SelectedApplications} />
                     {/* <Route path='/apply/:jobid' component={()=><About leaders={this.props.leaders}/>} />
                     <Route exact path='users/myapplications' component={() => <Menu dishes={this.props.dishes} />} />
                     <Route exact path='users/update' component={() => <Menu dishes={this.props.dishes} />} />

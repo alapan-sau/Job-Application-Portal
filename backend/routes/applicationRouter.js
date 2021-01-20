@@ -85,10 +85,13 @@ applicationRouter.route('/appliedto/:jobid')
 // APPLY to a JOB by USER
 applicationRouter.route('/apply/:jobid')
 .post(authenticate.verifyUser,(req,res,next) => {
-    console.log("1 here")
     Users.findById(req.user._id)
     .then((user)=>{
-        console.log("2 here")
+        if(user.selected==true){
+            err = new Error('Already Selected');
+            err.status = 403;
+            return next(err);
+        }
         if(user.totalApplications >= 10){
             err = new Error('Already reached maximum number of applications');
             err.status = 403;
@@ -96,27 +99,23 @@ applicationRouter.route('/apply/:jobid')
         }
         Jobs.findById(req.params.jobid)
         .then((job)=>{
-            console.log("3 here")
             if(job.remAppli <= 0){
-                err = new Error('Already reached maximum number of applications');
+                err = new Error('Already reached maximum number of Positions');
                 err.status = 403;
                 return next(err);
             }
-            console.log("4 here")
             req.body.job = req.params.jobid;
             req.body.applier = req.user._id;
             req.body.rated = false;
+            req.body.status = 'pending';
             Applications.create(req.body)
             .then((apps) => {
-                console.log("5 here")
                 var newApplicationsNumber = user.totalApplications+1;
                 Users.findByIdAndUpdate(req.user._id ,{ totalApplications: newApplicationsNumber })
                 .then(()=>{
-                    console.log("6 here")
                     var rem = job.remAppli - 1;
-                    Jobs.findById(job._id,{remAppli:rem})
+                    Jobs.findByIdAndUpdate(job._id,{remAppli:rem})
                     .then(()=>{
-                        console.log("7 here")
                         res.statusCode = 200;
                         res.setHeader('Content-Type', 'application/json');
                         res.json(apps);
@@ -131,5 +130,94 @@ applicationRouter.route('/apply/:jobid')
     }, (err) => next(err))
     .catch((err) => next(err));
 });
+
+
+
+// Update a STATUS of Application
+applicationRouter.route('/status/:appid')
+.put(authenticate.verifyRecruiter, (req,res,next) => {
+    console.log(req.body);
+    if(req.body.status==='selected'){
+        Applications.findById(req.params.appid)
+        .then((app)=>{
+            Applications.updateMany({applier:app.applier},{status:'rejected'}).populate('applier')
+            .then(()=>{
+                Users.findByIdAndUpdate(app.applier, {totalApplications:1, selected:true})
+                .then(()=>{
+                    let today = Date.now();
+                    Applications.findByIdAndUpdate(req.params.appid,{status:'selected', dateOfJoining: today},{new:true}).populate('job')
+                    .then((appl)=>{
+                        Jobs.findByIdAndUpdate(appl.job._id,{remPos : Number(appl.job.remPos)-1},{new:true})
+                        .then((job)=>{
+                            if(job.remPos==0){
+                                console.log("YOu are lucky");
+                                let currStatus = ['pending','shortlisted'];
+                                Applications.updateMany({job : job._id, status: {'$in': currStatus}},{status:'rejected'},{new:true})
+                                .then(()=>{
+                                    res.statusCode = 200;
+                                    res.setHeader('Content-Type', 'application/json');
+                                    res.json(appl);
+                                },(err) => next(err))
+                                .catch((err) => next(err))
+                            }
+                            else{
+                                res.statusCode = 200;
+                                res.setHeader('Content-Type', 'application/json');
+                                res.json(appl);
+                            }
+                        },(err) => next(err))
+                        .catch((err) => next(err))
+                    },(err) => next(err))
+                    .catch((err) => next(err))
+                },(err) => next(err))
+                .catch((err) => next(err))
+            },(err) => next(err))
+            .catch((err) => next(err))
+        },(err) => next(err))
+        .catch((err) => next(err))
+    }
+    else if(req.body.status==='rejected'){
+        Applications.findByIdAndUpdate(req.params.appid, {status: req.body.status}).populate('applier')
+        .then((app)=>{
+            Users.findByIdAndUpdate(app.applier._id,{totalApplications: (Number(app.applier.totalApplications)-1) , selected: false})
+            .then(()=>{
+                res.statusCode = 200;
+                res.setHeader('Content-Type', 'application/json');
+                res.json('Done');
+            },(err) => next(err))
+            .catch((err) => next(err))
+        },(err) => next(err))
+        .catch((err) => next(err))
+    }
+    else{
+        Applications.findByIdAndUpdate(req.params.appid, {status: req.body.status},{new:true})
+        .then((app)=>{
+            res.statusCode = 200;
+            res.setHeader('Content-Type', 'application/json');
+            res.json(app);
+        },(err) => next(err))
+        .catch((err) => next(err));
+    }
+});
+
+// GET the SELECTED APPLICATIONS for every JOB RECRUITER
+applicationRouter.route('/selected')
+.get(authenticate.verifyRecruiter, (req,res,next) => {
+    Jobs.find({creator: req.user._id})
+    .then((jobs)=>{
+        jobid = jobs.map((job)=>{
+            return job._id;
+        })
+        Applications.find({job: {'$in':jobid}, status:'selected'}).populate('job').populate('applier')
+        .then((apps)=>{
+            console.log(apps);
+            res.statusCode = 200;
+            res.setHeader('Content-Type', 'application/json');
+            res.json(apps);
+        },(err) => next(err))
+        .catch((err) => next(err))
+    },(err) => next(err))
+    .catch((err) => next(err))
+})
 
 module.exports = applicationRouter;
