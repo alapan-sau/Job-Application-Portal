@@ -216,6 +216,7 @@ class Signup extends Component{
     }
 
     removeEducation(idx){
+        console.log(idx);
         let ed = this.state.education;
         ed.splice(idx,1);
         let touched = this.state.touched;
@@ -260,7 +261,7 @@ class Signup extends Component{
                 </Col>
                 <Col md={1}>
                 <Button
-                onClick={(idx)=>{this.removeEducation(idx);}}>
+                onClick={()=>{this.removeEducation(idx)}}>
                     -
                 </Button>
                 </Col>

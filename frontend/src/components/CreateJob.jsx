@@ -5,6 +5,7 @@ import { render } from '@testing-library/react';
 import { BrowserRouter as Router, Route, Link , Switch, Redirect} from "react-router-dom";
 import axios from 'axios';
 
+import HeaderRecruiter from './HeaderRecruiter'
 
 class CreateJob extends Component{
     constructor(props){
@@ -76,7 +77,7 @@ class CreateJob extends Component{
                 </Col>
                 <Col md={1}>
                 <Button
-                onClick={(idx)=>{this.removeSkill(idx);}}>
+                onClick={()=>{this.removeSkill(idx)}}>
                     -
                 </Button>
                 </Col>
@@ -131,6 +132,7 @@ class CreateJob extends Component{
 
         return (
             <div className="container">
+                <HeaderRecruiter/>
                 <div className="row row-content">
                     <div className="col-12 col-md-9">
                         <Form onSubmit={this.handleSubmit}>

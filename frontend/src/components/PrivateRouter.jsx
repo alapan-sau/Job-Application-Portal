@@ -1,18 +1,26 @@
-import React from 'react';
-import { Route, Redirect } from 'react-router-dom';
-import { isLogin } from '../utils';
+import React, { Component } from 'react';
+import { BrowserRouter as Router, Route, Link, Redirect } from "react-router-dom";
 
-const PrivateRoute = ({component: Component, ...rest}) => {
-    return (
+export default class PrivateRouter extends Component {
+    render() {
+        let isLoggedIn = true;
+        if (!this.props.isLoggedIn) {
+            isLoggedIn = false;
+        }
+        if (!this.props.desiredType.includes(this.props.type)) {
+            isLoggedIn = false;
+        }
 
-        // Show the component only when the user is logged in
-        // Otherwise, redirect the user to /signin page
-        <Route {...rest} render={props => (
-            isLogin() ?
-                <Component {...props} />
-            : <Redirect to="/signin" />
-        )} />
-    );
-};
-
-export default PrivateRoute;
+        if (!isLoggedIn) {
+            return <Redirect to="/login" />;
+        } else {
+            if (this.props.hasProps) {
+                return <Route to={this.props.path} render={
+                    (props) => this.props.component
+                } />;
+            } else {
+                return <Route to={this.props.path} exact component={this.props.component}/>
+            }
+        }
+    }
+}

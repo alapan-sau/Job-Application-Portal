@@ -42,7 +42,7 @@ class Login extends Component{
             }
         }).then((response) => {
             alert(JSON.stringify(response));
-            console.log( response);
+            console.log(response);
             // window.location.replace("http://localhost:3000/users/login");
             this.props.clogin('Bearer '+response.data.token,'user');
         }).catch(error => {
@@ -70,7 +70,7 @@ class Login extends Component{
             // window.location.replace("http://localhost:3000/users/login");
             this.props.clogin('Bearer '+response.data.token,'recruiter');
         }).catch(error => {
-            alert(error.response);
+            alert(JSON.stringify(error.response));
             if (error) {
                 console.log(error.response);
             }

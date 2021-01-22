@@ -5,6 +5,10 @@ import { render } from '@testing-library/react';
 import { BrowserRouter as Router, Route, Link , Switch, Redirect} from "react-router-dom";
 import axios from 'axios';
 
+import HeaderRecruiter from './HeaderRecruiter';
+import HeaderUser from './HeaderUser';
+
+
 class SelectedApplications extends Component{
     constructor(props){
         super(props);
@@ -209,6 +213,7 @@ class SelectedApplications extends Component{
         });
 
         return(<div className="container">
+            <HeaderRecruiter/>
             <Form>
             <FormGroup row>
                     <Col md={6}> <Button row name="jobtitle" onClick={this.setSort}>Sort By Title</Button></Col>

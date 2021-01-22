@@ -3,6 +3,8 @@ import {Breadcrumb, BreadcrumbItem, Button, Form, FormGroup, Label, Input, Col, 
 import {Link} from 'react-router-dom';
 import { render } from '@testing-library/react';
 import axios from 'axios';
+import HeaderUser from './HeaderUser';
+
 
 class UpdateUser extends Component{
     constructor(props){
@@ -248,7 +250,7 @@ class UpdateUser extends Component{
                 </Col>
                 <Col md={1}>
                 <Button
-                onClick={(idx)=>{this.removeEducation(idx)}}>
+                onClick={()=>{this.removeEducation(idx)}}>
                     -
                 </Button>
                 </Col>
@@ -400,6 +402,7 @@ class UpdateUser extends Component{
 
         return(
             <div className="container">
+                <HeaderUser/>
                 <div className="row row-content">
                     <div className="col-12 col-md-9">
                         <Form>

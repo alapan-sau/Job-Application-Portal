@@ -5,6 +5,8 @@ import { render } from '@testing-library/react';
 import { BrowserRouter as Router, Route, Link , Switch, Redirect} from "react-router-dom";
 import axios from 'axios';
 
+import HeaderRecruiter from './HeaderRecruiter';
+
 class SelectedJobApps extends Component{
     constructor(props){
         super(props);
@@ -171,6 +173,7 @@ class SelectedJobApps extends Component{
         });
 
         return(<div className="container">
+                <HeaderRecruiter />
                 <Col md={6}> <Button row name="createdAt" onClick={this.setSort}>Sort By Creation Time</Button></Col>
                 <Col md={6}> <Button row name="name" onClick={this.setSort}>Sort By Name</Button></Col>
                 <Col md={6}> <Button row name="rating" onClick={this.setSort}>Sort By Rating</Button></Col>

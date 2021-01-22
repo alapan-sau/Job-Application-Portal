@@ -5,6 +5,7 @@ import { render } from '@testing-library/react';
 import { BrowserRouter as Router, Route, Link , Switch, Redirect} from "react-router-dom";
 import axios from 'axios';
 
+import HeaderRecruiter from './HeaderRecruiter'
 
 class DashboardRecruiter extends Component{
     constructor(props){
@@ -183,6 +184,7 @@ class DashboardRecruiter extends Component{
 
         return(
             <div className="container">
+                <HeaderRecruiter/>
                 <Modal isOpen={this.state.isModalOpen} toggle={this.toggleModal}>
                     <ModalHeader toggle={this.toggleModal}>Login</ModalHeader>
                     <ModalBody>

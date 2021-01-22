@@ -5,6 +5,8 @@ import { render } from '@testing-library/react';
 import { BrowserRouter as Router, Route, Link , Switch, Redirect} from "react-router-dom";
 import axios from 'axios';
 
+import HeaderUser from './HeaderUser';
+
 class ViewApplications extends Component{
     constructor(props){
         super(props);
@@ -143,6 +145,7 @@ class ViewApplications extends Component{
         });
 
         return(<div className="container">
+            <HeaderUser/>
             <Modal isOpen={this.state.isModalOpen} toggle={this.toggleModal}>
                 <ModalHeader toggle={this.toggleModal}>Login</ModalHeader>
                 <ModalBody>

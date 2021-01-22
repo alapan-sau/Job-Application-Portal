@@ -5,6 +5,8 @@ import { render } from '@testing-library/react';
 import { BrowserRouter as Router, Route, Link , Switch, Redirect} from "react-router-dom";
 import axios from 'axios';
 
+import HeaderUser from './HeaderUser';
+
 
 class DashboardUser extends Component{
     constructor(props){
@@ -14,7 +16,7 @@ class DashboardUser extends Component{
             tempJoblist:[],
             applist:[],
             sortBy:'',
-            sortOrder:'desc',
+            sortOrder:'asc',
             salaryLow:null,
             salaryHigh:null,
             durationMax:null,
@@ -126,17 +128,22 @@ class DashboardUser extends Component{
     setSort(event){
         const target = event.target;
         const name = target.name;
-        this.setState({
-            sortBy : name
-        });
-        if(this.state.order=='desc'){
-            this.setState({
-                order : 'asc'
-            });
+        if(this.state.sortBy===name){
+            if(this.state.order==='desc'){
+                this.setState({
+                    order : 'asc'
+                });
+            }
+            else{
+                this.setState({
+                    order : 'desc'
+                });
+            }
         }
         else{
             this.setState({
-                order : 'desc'
+                sortBy : name,
+                order: 'asc'
             });
         }
     }
@@ -265,6 +272,7 @@ class DashboardUser extends Component{
 
         return(
             <div className="container">
+                <HeaderUser/>
                 <Modal isOpen={this.state.isModalOpen} toggle={this.toggleModal}>
                     <ModalHeader toggle={this.toggleModal}>Login</ModalHeader>
                     <ModalBody>
