@@ -19,7 +19,6 @@ const recruiterSchema = new Schema({
     },
     telnum: {
         type: Number,
-        min: 1
     },
     bio:{
         type: String,

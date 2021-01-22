@@ -152,7 +152,7 @@ class DashboardUser extends Component{
     }
 
     clear(){
-        this.getData();
+        window.location.reload();
     }
 
     getData(){
@@ -292,8 +292,8 @@ class DashboardUser extends Component{
                     <FormGroup row>
                     <Label htmlFor="salary" md={2}>Salary</Label>
                     <Col md={3}>
-                    <Input type="number" name="salaryLow"value={this.state.salaryLow} onChange={this.handleInputChange}></Input>
-                    <Input type="number" name="salaryHigh"value={this.state.salaryHigh} onChange={this.handleInputChange}></Input>
+                    <Input type="number" name="salaryLow" value={this.state.salaryLow} onChange={this.handleInputChange}></Input>
+                    <Input type="number" name="salaryHigh" value={this.state.salaryHigh} onChange={this.handleInputChange}></Input>
                     </Col>
                     <Label htmlFor="durationMax" md={2}>Duration</Label>
                     <Col md={3}>

@@ -150,7 +150,7 @@ class SelectedJobApps extends Component{
 
             let ButtonReject;
             if(app.status !== 'rejected')ButtonReject = <Button id={app._id} name='rejected' onClick={this.handleButton}> Reject </Button>
-            else ButtonReject = <Button id={app._id} name='rejected'> Rejected </Button>
+            else return null;
 
             return(
                 <Row>

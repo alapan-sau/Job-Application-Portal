@@ -6,15 +6,10 @@ var passportLocalMongoose = require('passport-local-mongoose');
 var educationSchema = new Schema({
     start:  {
         type: Number,
-        min: 1970,
-        max: 2021,
         required: true
     },
     end:  {
         type: Number,
-        min: 1970,
-        max: 2030,
-        required: true
     },
     institute:  {
         type: String,
@@ -40,7 +35,7 @@ const userSchema = new Schema({
     rating:{
         type: Number
     },
-    skills: [String],
+    skill: [String],
     totalApplications: {
         type : Number,
         required: true

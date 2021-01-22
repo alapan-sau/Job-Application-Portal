@@ -144,10 +144,10 @@ jobRouter.route('/:jobid')
                 res.setHeader('Content-Type', 'application/json');
                 res.json('Making Maximim Application less than Current Applications');
             }
-            if(job.maxPos - job.remPos > req.body.maxPos){
+            if(job.maxPos - job.remPos >= req.body.maxPos){
                 res.statusCode = 403;
                 res.setHeader('Content-Type', 'application/json');
-                res.json('Making Maximum Position less than Current filled Positions');
+                res.json('Making Maximum Position less than/equal to Current filled Positions');
             }
             req.body.remPos = req.body.maxPos-(job.maxPos - job.remPos);
             req.body.remAppli = req.body.maxAppli-(job.maxAppli - job.remAppli);

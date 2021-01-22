@@ -153,10 +153,17 @@ applicationRouter.route('/status/:appid')
                                 console.log("YOu are lucky");
                                 let currStatus = ['pending','shortlisted'];
                                 Applications.updateMany({job : job._id, status: {'$in': currStatus}},{status:'rejected'},{new:true})
-                                .then(()=>{
-                                    res.statusCode = 200;
-                                    res.setHeader('Content-Type', 'application/json');
-                                    res.json(appl);
+                                .then((x)=>{
+                                    let removedUsers = x.map((element)=>{
+                                        return element.applier;
+                                    })
+                                    Users.updateMany({_id:{'$in':removedUsers}},{$inc : {"totalApplications" : -1}})
+                                    .then(()=>{
+                                        res.statusCode = 200;
+                                        res.setHeader('Content-Type', 'application/json');
+                                        res.json(appl);
+                                    },(err) => next(err))
+                                    .catch((err) => next(err))
                                 },(err) => next(err))
                                 .catch((err) => next(err))
                             }
