@@ -14,7 +14,7 @@ class SelectedApplications extends Component{
         super(props);
 		this.state = {
             applist:[],
-            rating:'',
+            rating:'1',
             selectedId:'',
             sortBy:'',
             order:''
@@ -36,12 +36,13 @@ class SelectedApplications extends Component{
                 'Content-Type': 'application/json',
             }
         }).then((response) => {
-            alert(JSON.stringify(response));
+            // alert(JSON.stringify(response));
             this.setState({
                 applist:response.data,
                 isModalOpen:false
             })
         }).catch(error => {
+            alert(JSON.stringify(error.response));
             if (error) {
                 console.log(error.response);
             }
@@ -157,7 +158,7 @@ class SelectedApplications extends Component{
                 'Content-Type': 'application/json',
             }
         }).then((response) => {
-            alert(JSON.stringify(response));
+            // alert(JSON.stringify(response));
             console.log(response.data);
             this.setState({isModalOpen:false});
             this.getData();

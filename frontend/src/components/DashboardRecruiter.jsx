@@ -26,6 +26,23 @@ class DashboardRecruiter extends Component{
         this.handleInputChange = this.handleInputChange.bind(this);
     }
 
+
+    validateSubmit(){
+        if(((this.state.maxAppli.length===0) || (Number(this.state.maxAppli)<=0))){
+            alert("Required Positive Integer for Maximum Applications");
+            return false;
+        }
+        if(((this.state.maxPos.length===0) || (Number(this.state.maxPos)<=0))){
+            alert("Required Positive Integer for maximum positions");
+            return false;
+        }
+        if((this.state.deadline=== '' || (new Date(this.state.deadline)  < new Date()) ) ){
+            alert("A Deadline needs to be set in future");
+            return false;
+        }
+        return true;
+    }
+
     getData(){
         axios({
             method: "GET",
@@ -39,7 +56,7 @@ class DashboardRecruiter extends Component{
                 joblist:response.data,
             })
         }).catch(error => {
-            alert(JSON.stringify(error.response));
+            // alert(JSON.stringify(error.response));
             if (error) {
                 console.log(error.response);
             }
@@ -120,7 +137,11 @@ class DashboardRecruiter extends Component{
         });
     }
 
-    submitEdit(){
+    submitEdit(event){
+        if(!this.validateSubmit()){
+            event.preventDefault();
+            return;
+        }
         let obj={};
         obj.maxAppli = this.state.maxAppli;
         obj.maxPos = this.state.maxPos;
@@ -137,7 +158,7 @@ class DashboardRecruiter extends Component{
             this.getData();
             this.setState({isModalOpen:false});
         }).catch(error => {
-            alert(JSON.stringify(error.response));
+            // alert(JSON.stringify(error.response));
             if (error) {
                 console.log(error.response);
             }
@@ -161,7 +182,7 @@ class DashboardRecruiter extends Component{
                   <Card body>
                     <CardTitle tag="h5">{job.title}</CardTitle>
                     <CardText>Id : {job._id}</CardText>
-                    <CardText>Skills : {job.skills}</CardText>
+                    <CardText>Skills : {job.skill}</CardText>
                     <CardText>Deadline : {job.deadline}</CardText>
                     <CardText>Remaining Applications : {job.remAppli}</CardText>
                     <CardText>Remaining Positions : {job.remPos}</CardText>
@@ -195,7 +216,7 @@ class DashboardRecruiter extends Component{
                                 <Label htmlFor="maxPos">Maximum Positions</Label>
                                 <Input type="Number" id="maxPos" name="maxPos" value={this.state.maxPos} onChange={this.handleInputChange}/>
                                 <Label htmlFor="deadline">Deadline</Label>
-                                <Input type="datetime" id="deadline" name="deadline" value={this.state.deadline} onChange={this.handleInputChange}/>
+                                <Input type="datetime-local" id="deadline" name="deadline" value={this.state.deadline} onChange={this.handleInputChange}/>
                             </FormGroup>
                             <Button color="primary" onClick={this.submitEdit}>Submit Application</Button>
                         </Form>

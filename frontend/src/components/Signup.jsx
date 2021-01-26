@@ -1,6 +1,6 @@
 import React , {Component}from 'react';
-import {Breadcrumb, BreadcrumbItem, Button, Form, FormGroup, Label, Input, Col, FormFeedback} from 'reactstrap';
-import {Link} from 'react-router-dom';
+import {Breadcrumb, BreadcrumbItem, Button, Form, FormGroup, Label, Input, Col, FormFeedback, Alert} from 'reactstrap';
+import {Link, Redirect} from 'react-router-dom';
 import { render } from '@testing-library/react';
 import axios from 'axios';
 
@@ -15,6 +15,8 @@ class Signup extends Component{
             password: '',
             education:[{institute:'', start:'',end:''}],
             skill:[''],
+            skillList:['C++','Python'],
+            new_skill:'',
             telnum:'',
             bio:'',
             touched : {
@@ -43,6 +45,7 @@ class Signup extends Component{
         this.validateEducation= this.validateEducation.bind(this);
         this.validateSkill= this.validateSkill.bind(this);
         this.handleBlurSkill = this.handleBlurSkill.bind(this);
+        this.extraSkill = this.extraSkill.bind(this);
     }
 
     handleInputChange(event) {
@@ -289,6 +292,17 @@ class Signup extends Component{
 
     }
 
+    extraSkill()
+    {
+        var val = this.state.skillList;
+        if(this.state.new_skill==='') return;
+        val.push(this.state.new_skill);
+        this.setState({
+            skillList: val,
+            new_skill: ''
+        });
+    }
+
     addSkill(){
         let sk = this.state.skill;
         sk.push('');
@@ -306,6 +320,12 @@ class Signup extends Component{
     }
 
     renderSkill(){
+        let sklist = this.state.skillList.map((item, i) => {
+            return(
+                <option key={i} value={item}>{item}</option>
+            )
+        })
+
         let sk = this.state.skill;
         let errors = this.validateSkill(sk);
         let sks = sk.map((val,idx)=>{
@@ -322,8 +342,7 @@ class Signup extends Component{
                     onBlur={()=>{this.handleBlurSkill(idx)}}
                     >
                         <option value=''> Select Type</option>
-                        <option>C++</option>
-                        <option>Python</option>
+                        {sklist}
                     </Input>
                     <FormFeedback>{errors.skill[idx]}</FormFeedback>
                 </Col>
@@ -365,6 +384,10 @@ class Signup extends Component{
                 <div>
                 {eds}
                 {sks}
+                <FormGroup row>
+                       <Input type="text" name="new_skill" value={this.state.new_skill} onChange={this.handleInputChange} ></Input>
+                       <Button onClick={this.extraSkill}>Add skill to dropdown</Button>
+                   </FormGroup>
                 <FormGroup row>
                     <Label htmlFor="photo" md={2}>Profile Photo</Label>
                     <Col md={10}>
@@ -431,13 +454,11 @@ class Signup extends Component{
         }).then((response) => {
             alert("Welcome! We have you successfully registered.");
             console.log(response)
-            window.location.replace("http://localhost:3001/login");
+            window.location.replace("http://localhost:3001/");
         }).catch(error => {
             alert("Oops, Something went wrong!!");
             if (error) {
                 console.log(error.response);
-                // this.setState({isError: true});
-                // this.setState({errors: error.response.data});
             }
         });
         else if(this.state.formtype==='recruiter')axios({
@@ -450,13 +471,12 @@ class Signup extends Component{
         }).then((response) => {
             alert("Welcome! We have you successfully registered.");
             console.log(response)
-            window.location.replace("http://localhost:3001/login");
+            window.location.replace("http://localhost:3001/");
         }).catch(error => {
             alert("Oops, Something went wrong!!");
             if (error) {
                 console.log(error.response);
-                // this.setState({isError: true});
-                // this.setState({errors: error.response.data});
+                alert(JSON.stringify(error.response));
             }
         });
         event.preventDefault();
@@ -484,12 +504,21 @@ class Signup extends Component{
     }
 
     render(){
+        if(this.props.isLoggedIn===true){
+            if(this.props.type==='user')
+                return (<Redirect to='/users/dashboard'/>);
+            else{
+                return (<Redirect to='/recruiters/dashboard'/>)
+            }
+        }
         const errors=this.validate(this.state.firstName,this.state.lastName,this.state.email,this.state.password,this.state.formtype);
 
         return(
+
             <div className="container">
                 <div className="row row-content">
                     <div className="col-12 col-md-9">
+                    <p>Already have an account? <Link to='/'><Button>Log in</Button></Link> </p>
                         <Form>
                             <FormGroup row>
                                 <Label htmlFor="firstName" md={2}>First Name</Label>

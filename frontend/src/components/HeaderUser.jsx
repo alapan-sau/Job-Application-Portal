@@ -42,7 +42,7 @@ class HeaderUser extends Component{
                         </Collapse>
                     </div>
                 </Navbar>
-                <Jumbotron>
+                <Jumbotron style={{backgroundColor: '#8d76c2'}}> 
                     <div className="container">
                         <div className="row row-header">
                             <div className="col-12 col-sm-6">

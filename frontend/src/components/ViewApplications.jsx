@@ -13,7 +13,7 @@ class ViewApplications extends Component{
 		this.state = {
             applist:[],
             appid : '',
-            rate:'',
+            rate:'1',
             isModalOpen:false
         };
 
@@ -68,7 +68,7 @@ class ViewApplications extends Component{
                 'Content-Type': 'application/json',
             }
         }).then((response) => {
-            alert(JSON.stringify(response));
+            // alert(JSON.stringify(response));
             console.log(response.data);
             this.setState({isModalOpen:false});
             this.getData();

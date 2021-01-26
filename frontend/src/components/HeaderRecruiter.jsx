@@ -45,12 +45,12 @@ class HeaderRecruiter extends Component{
                         </Collapse>
                     </div>
                 </Navbar>
-                <Jumbotron>
+                <Jumbotron  style={{backgroundColor: '#8d76c2'}}>
                     <div className="container">
                         <div className="row row-header">
                             <div className="col-12 col-sm-6">
                                 <h1>Job Application Portal</h1>
-                                <p>Enjoy your new Employement!</p>
+                                <p>Search for the best employees!!</p>
                             </div>
                         </div>
                     </div>

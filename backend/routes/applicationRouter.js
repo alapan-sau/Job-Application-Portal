@@ -9,6 +9,15 @@ const Users = require('../model/users');
 const applicationRouter = express.Router();
 applicationRouter.use(bodyParser.json());
 
+var nodemailer = require('nodemailer');
+var transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: 'ssad.jap@gmail.com',
+      pass: 'kolkata123*'
+    }
+  });
+
 
 // GET all APP DEV
 applicationRouter.route('/')
@@ -145,33 +154,50 @@ applicationRouter.route('/status/:appid')
                 Users.findByIdAndUpdate(app.applier, {totalApplications:1, selected:true})
                 .then(()=>{
                     let today = Date.now();
-                    Applications.findByIdAndUpdate(req.params.appid,{status:'selected', dateOfJoining: today},{new:true}).populate('job')
+                    Applications.findByIdAndUpdate(req.params.appid,{status:'selected', dateOfJoining: today},{new:true}).populate('job').populate('applier')
                     .then((appl)=>{
-                        Jobs.findByIdAndUpdate(appl.job._id,{remPos : Number(appl.job.remPos)-1},{new:true})
+                        Jobs.findByIdAndUpdate(appl.job._id,{remPos : Number(appl.job.remPos)-1},{new:true}).populate('creator')
                         .then((job)=>{
-                            if(job.remPos==0){
-                                console.log("YOu are lucky");
-                                let currStatus = ['pending','shortlisted'];
-                                Applications.updateMany({job : job._id, status: {'$in': currStatus}},{status:'rejected'},{new:true})
-                                .then((x)=>{
-                                    let removedUsers = x.map((element)=>{
-                                        return element.applier;
-                                    })
-                                    Users.updateMany({_id:{'$in':removedUsers}},{$inc : {"totalApplications" : -1}})
-                                    .then(()=>{
-                                        res.statusCode = 200;
-                                        res.setHeader('Content-Type', 'application/json');
-                                        res.json(appl);
+                            var mailOptions = {
+                                from: 'ssad.jap@gmail.com',
+                                to: `${appl.applier.email}`,
+                                subject: 'Job selection',
+                                text: 'You have been selected by '+ job.creator.firstName + " (recruiter) for  the role of " + job.title
+                            }
+                            console.log(mailOptions);
+                            transporter.sendMail(mailOptions)
+                            .then((info)=>{
+                                console.log(info);
+                                if(job.remPos==0){
+                                    console.log("YOu are lucky");
+                                    let currStatus = ['pending','shortlisted'];
+                                    Applications.find({job : job._id, status: {'$in': currStatus}}).populate('applier')
+                                    .then((x)=>{
+                                        Applications.updateMany({job : job._id, status: {'$in': currStatus}},{status:'rejected'})
+                                        .then(()=>{
+                                            let removedUsers = x.map((element)=>{
+                                                return element.applier._id;
+                                            })
+                                            console.log(x);
+                                            Users.updateMany({_id:{'$in':removedUsers}},{$inc : {"totalApplications" : -1}})
+                                            .then(()=>{
+                                                res.statusCode = 200;
+                                                res.setHeader('Content-Type', 'application/json');
+                                                res.json(appl);
+                                            },(err) => next(err))
+                                            .catch((err) => next(err))
+                                        },(err) => next(err))
+                                        .catch((err) => next(err))
                                     },(err) => next(err))
                                     .catch((err) => next(err))
-                                },(err) => next(err))
-                                .catch((err) => next(err))
-                            }
-                            else{
-                                res.statusCode = 200;
-                                res.setHeader('Content-Type', 'application/json');
-                                res.json(appl);
-                            }
+                                }
+                                else{
+                                    res.statusCode = 200;
+                                    res.setHeader('Content-Type', 'application/json');
+                                    res.json(appl);
+                                }
+                            },(err) => next(err))
+                            .catch((err) => next(err))
                         },(err) => next(err))
                         .catch((err) => next(err))
                     },(err) => next(err))

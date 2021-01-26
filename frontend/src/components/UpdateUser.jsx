@@ -47,7 +47,7 @@ class UpdateUser extends Component{
             }
         }).then((response) => {
             console.log(response.data);
-            alert(JSON.stringify(response.data));
+            // alert(JSON.stringify(response.data));
             let touched = this.state.touched;
             var n = response.data.education.length;
             let education=[];
@@ -373,7 +373,7 @@ class UpdateUser extends Component{
             return;
         }
 
-        alert(JSON.stringify(this.state));
+        // alert(JSON.stringify(this.state));
         // alert('Current State is: ' + JSON.stringify(this.state));
         axios({
             method: "PUT",

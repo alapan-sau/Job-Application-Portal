@@ -82,6 +82,7 @@ class SelectedJobApps extends Component{
     }
 
     handleButton(event){
+        alert('Please wait');
         let name = event.target.name;
         let id = event.target.id;
         axios({
@@ -92,7 +93,7 @@ class SelectedJobApps extends Component{
                 'Content-Type': 'application/json',
             }
         }).then((response) => {
-            alert(JSON.stringify(response));
+            // alert(JSON.stringify(response));
             this.getData();
         }).catch(error => {
             if (error) {
@@ -126,7 +127,7 @@ class SelectedJobApps extends Component{
 
     render(){
 
-        // console.log(this.state.applist);
+        console.log(this.state.applist);
         let allApps = this.state.applist;
 
         let Apps = allApps.map((app)=>{
@@ -152,7 +153,7 @@ class SelectedJobApps extends Component{
 
             let ButtonReject;
             if(app.status !== 'rejected')ButtonReject = <Button id={app._id} name='rejected' onClick={this.handleButton}> Reject </Button>
-            else return null;
+            if(app.status === 'selected')ButtonReject = null;
 
             return(
                 <Row>

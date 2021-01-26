@@ -17,6 +17,7 @@ class Login extends Component{
         this.handleInputChange = this.handleInputChange.bind(this);
         this.handleUserSubmit = this.handleUserSubmit.bind(this);
         this.handleRecruiterSubmit = this.handleRecruiterSubmit.bind(this);
+        this.validateSubmit = this.validateSubmit.bind(this);
     }
 
     handleInputChange(event) {
@@ -31,8 +32,11 @@ class Login extends Component{
 
     handleUserSubmit(event) {
         // console.log('Current State is: ' + JSON.stringify(this.state));
-        alert('Current State is: ' + JSON.stringify(this.state));
+        // alert('Current State is: ' + JSON.stringify(this.state));
         event.preventDefault();
+        if(!this.validateSubmit()){
+            return;
+        }
         axios({
             method: "POST",
             url: "http://localhost:3000/users/login",
@@ -41,10 +45,10 @@ class Login extends Component{
                 'Content-Type': 'application/json',
             }
         }).then((response) => {
-            alert(JSON.stringify(response));
+            // alert(JSON.stringify(response));
             console.log(response);
-            // window.location.replace("http://localhost:3000/users/login");
             this.props.clogin('Bearer '+response.data.token,'user');
+            window.location.replace("http://localhost:3001/users/dashboard");
         }).catch(error => {
             alert(JSON.stringify(error.response));
             if (error) {
@@ -55,8 +59,11 @@ class Login extends Component{
 
     handleRecruiterSubmit(event) {
         // console.log('Current State is: ' + JSON.stringify(this.state));
-        alert('Current State is: ' + JSON.stringify(this.state));
+        // alert('Current State is: ' + JSON.stringify(this.state));
         event.preventDefault();
+        if(!this.validateSubmit()){
+            return;
+        }
         axios({
             method: "POST",
             url: "http://localhost:3000/recruiters/login",
@@ -65,10 +72,10 @@ class Login extends Component{
                 'Content-Type': 'application/json',
             }
         }).then((response) => {
-            alert(JSON.stringify(response));
+            // alert(JSON.stringify(response));
             console.log(response);
-            // window.location.replace("http://localhost:3000/users/login");
             this.props.clogin('Bearer '+response.data.token,'recruiter');
+            window.location.replace("http://localhost:3001/recruiters/dashboard");
         }).catch(error => {
             alert(JSON.stringify(error.response));
             if (error) {
@@ -77,11 +84,35 @@ class Login extends Component{
         });
     }
 
+    validateSubmit(){
+        const reg = /^[a-zA-Z0-9.!#$%&'+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:.[a-zA-Z0-9-]+.+(?:.[a-zA-Z0-9-]))$/;
+        if(!reg.test(this.state.email)){
+            alert('Enter valid Email');
+            return false;
+        }
+        if(this.state.password==''){
+            alert("Enter password");
+            return false;
+        }
+        return true;
+    }
+
     render(){
+        if(this.props.isLoggedIn===true){
+            if(this.props.type==='user')
+                return (<Redirect to='/users/dashboard'/>);
+            else if(this.props.type==='recruiter'){
+                return (<Redirect to='/recruiters/dashboard'/>)
+            }
+            else{
+                return(<Redirect to='/'/>)
+            }
+        }
         return (
             <div className="container">
                 <div className="row row-content">
                     <div className="col-12 col-md-9">
+                        <p>Don't have an account already? <Link to='/signup'><Button>Sign up</Button></Link> </p>
                         <Form onSubmit={this.handleSubmit}>
                             <FormGroup row>
                                 <Label htmlFor="email" md={2}>Email</Label>

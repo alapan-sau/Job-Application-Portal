@@ -54,7 +54,6 @@ class Main extends Component{
 			bearerToken: null
 		});
 		delete axios.defaults.headers.common["Authorization"];
-        return <Redirect to='/' />
 	}
 
 	componentWillMount(){
@@ -73,8 +72,8 @@ class Main extends Component{
 
 		const SelectedJob = ({match}) => {
 			console.log(match);
-			if(this.state.isLoggedIn==false || this.state.userType=='user'){
-				return <Redirect to='/login'/>
+			if(this.state.isLoggedIn===false || this.state.userType==='user'){
+				return <Redirect to='/'/>
 			}
 			return(
 			    <SelectedJobApps jobid={match.params.jobid}/>
@@ -83,8 +82,9 @@ class Main extends Component{
         return (
             <div>
                   <Switch>
-					<Route exact path='/' component={Signup}/>
-					<Route exact path='/login' component={()=><Login clogin={this.clogin}/>} />
+					<Route exact path='/signup' component={()=><Signup isLoggedIn={this.state.isLoggedIn} type={this.state.userType}/> }/>
+					<Route exact path='/' component={()=><Login clogin={this.clogin} isLoggedIn={this.state.isLoggedIn} type={this.state.userType}/>} />
+
 					<Route exact path="/createjob"
 					render = {
 						(props) => <PrivateRouter {...props}
@@ -95,6 +95,7 @@ class Main extends Component{
 						hasProps={true}
 						component={<CreateJob/>}
 					/>}/>
+
 					<Route exact path="/users/dashboard"
 					render = {
 						(props) => <PrivateRouter {...props}
@@ -105,6 +106,7 @@ class Main extends Component{
 						hasProps={true}
 						component={<DashboardUser/>}
 					/>}/>
+
 					<Route exact path="/users/myapplications"
 					render = {
 						(props) => <PrivateRouter {...props}
@@ -115,6 +117,7 @@ class Main extends Component{
 						hasProps={true}
 						component={<ViewApplications/>}
 					/>}/>
+
 					<Route exact path="/users/update"
 					render = {
 						(props) => <PrivateRouter {...props}
@@ -125,6 +128,7 @@ class Main extends Component{
 						hasProps={true}
 						component={<UpdateUser/>}
 					/>}/>
+
 					<Route exact path="/recruiters/update"
 					render = {
 						(props) => <PrivateRouter {...props}
@@ -135,6 +139,7 @@ class Main extends Component{
 						hasProps={true}
 						component={<UpdateRecruiter/>}
 					/>}/>
+
 					<Route exact path="/recruiters/dashboard"
 					render = {
 						(props) => <PrivateRouter {...props}
@@ -145,6 +150,7 @@ class Main extends Component{
 						hasProps={true}
 						component={<DashboardRecruiter/>}
 					/>}/>
+
 					<Route exact path="/recruiters/:jobid"
 						component={SelectedJob} />
 
@@ -158,7 +164,9 @@ class Main extends Component{
 						hasProps={true}
 						component={<SelectedApplications/>}
 					/>}/>
-					<Route exact path="/logout" component={()=><Logout clogout={this.clogout}/>} />
+
+					<Route exact path="/logout" component={()=><Logout clogout={this.clogout} type={this.state.userType} isLoggedIn={this.state.isLoggedIn}/>} />
+
                   </Switch>
             </div>
         );

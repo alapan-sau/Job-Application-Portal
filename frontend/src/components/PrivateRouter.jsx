@@ -12,7 +12,7 @@ export default class PrivateRouter extends Component {
         }
 
         if (!isLoggedIn) {
-            return <Redirect to="/login" />;
+            return <Redirect to="/" />;
         } else {
             if (this.props.hasProps) {
                 return <Route to={this.props.path} render={

@@ -7,6 +7,7 @@ import axios from 'axios';
 
 import HeaderUser from './HeaderUser';
 
+import Fuse from 'fuse.js';
 
 class DashboardUser extends Component{
     constructor(props){
@@ -16,14 +17,15 @@ class DashboardUser extends Component{
             tempJoblist:[],
             applist:[],
             sortBy:'',
-            sortOrder:'asc',
+            order:'desc',
             salaryLow:null,
             salaryHigh:null,
             durationMax:null,
             jobType:'All',
             sop:'',
             currentApplicationJobId:'',
-            isModalOpen : false
+            isModalOpen : false,
+            search: ''
         };
 
         this.comp = this.comp.bind(this);
@@ -35,6 +37,23 @@ class DashboardUser extends Component{
         this.toggleModal = this.toggleModal.bind(this);
         this.submitAppli = this.submitAppli.bind(this);
         this.getData = this.getData.bind(this);
+        this.handleSearch = this.handleSearch.bind(this);
+    }
+
+    handleSearch()
+    {
+        var new_arr = this.state.tempJoblist;
+        const fuse = new Fuse(new_arr, {
+            keys: [
+                'title'
+            ]
+        });
+        new_arr = fuse.search(this.state.search);
+        console.log(new_arr);
+        var results = new_arr.map((val) => val.item);
+        this.setState({
+            tempJoblist: results
+        })
     }
 
     toggleModal(event)
@@ -74,7 +93,7 @@ class DashboardUser extends Component{
                 'Content-Type': 'application/json',
             }
         }).then((response) => {
-            alert(JSON.stringify(response));
+            // alert(JSON.stringify(response));
             console.log(response.data);
             this.setState({isModalOpen:false});
             this.getData();
@@ -128,31 +147,26 @@ class DashboardUser extends Component{
     setSort(event){
         const target = event.target;
         const name = target.name;
-        if(this.state.sortBy===name){
-            if(this.state.order==='desc'){
-                this.setState({
-                    order : 'asc'
-                });
-            }
-            else{
-                this.setState({
-                    order : 'desc'
-                });
-            }
+        this.setState({
+            sortBy : name
+        });
+        if(this.state.order=='desc'){
+            this.setState({
+                order : 'asc'
+            });
         }
         else{
             this.setState({
-                sortBy : name,
-                order: 'asc'
+                order : 'desc'
             });
         }
     }
 
     setFilter(){
-        console.log('I camr here');
+        // console.log('I camr here');
         let temp = this.state.tempJoblist;
         temp = temp.filter(this.filt);
-        console.log('I camr temp');
+        // console.log('I camr temp');
         console.log(temp);
         this.setState({tempJoblist:temp});
 
@@ -178,10 +192,10 @@ class DashboardUser extends Component{
             })
             // console.log(this.state.joblist);
         }).catch(error => {
-            alert(JSON.stringify(error.response));
             if (error) {
                 console.log(error.response);
             }
+            // alert(JSON.stringify(error.response));
         });
 
         axios({
@@ -226,22 +240,25 @@ class DashboardUser extends Component{
         let jobs = allJob.map((job)=>{
             let id = job._id;
             let title = job.title;
-            let skills = job.skills;
+            let skills = job.skill;
             let deadline = job.deadline;
             let remAppli = job.remAppli;
             let remPos = job.remPos;
             let type = job.type;
 
-            let ButtonApply = <Button id={job._id} onClick={this.toggleModal}>Apply</Button>
-            let ButtonApplied = <Button>Applied</Button>
-            let ButtonFull = <Button>Full</Button>
+            if(new Date(job.deadline) - new Date(Date.now()) < 0)
+                return null;
+
+            let ButtonApply = <Button color='success' id={job._id} onClick={this.toggleModal}>Apply</Button>
+            let ButtonApplied = <Button color='primary'>Applied</Button>
+            let ButtonFull = <Button color='danger'>Full</Button>
 
             let usedButton;
             if(allAppliedJob.includes(id)){
                 usedButton = ButtonApplied
             }
             else{
-                if(remAppli==0 || remPos==0){
+                if(remAppli<=0 || remPos<=0){
                     usedButton = ButtonFull
                 }
                 else{
@@ -259,7 +276,8 @@ class DashboardUser extends Component{
                     <CardText>Remaining Applications : {remAppli}</CardText>
                     <CardText>Remaining Positions : {remPos}</CardText>
                     <CardText>Type of Job : {type}</CardText>
-                    <CardText>Job Creator : {job.creator.email}</CardText>
+                    <CardText>Job Creator Mail : {job.creator.email}</CardText>
+                    <CardText>Job Creator : {job.creator.firstName}</CardText>
                     <CardText>Salary : {job.salary}</CardText>
                     <CardText>Duration : {job.duration}</CardText>
                     <CardText>Rating : {job.rating}</CardText>
@@ -274,7 +292,7 @@ class DashboardUser extends Component{
             <div className="container">
                 <HeaderUser/>
                 <Modal isOpen={this.state.isModalOpen} toggle={this.toggleModal}>
-                    <ModalHeader toggle={this.toggleModal}>Login</ModalHeader>
+                    <ModalHeader toggle={this.toggleModal}>Application Form</ModalHeader>
                     <ModalBody>
                         <Form>
                             <FormGroup>
@@ -319,15 +337,19 @@ class DashboardUser extends Component{
                     </Col>
                     </FormGroup>
                     <FormGroup row>
-                    <Col md={6}> <Button row name="salary" onClick={this.setSort}>Sort By Salary</Button></Col>
+                    <Label htmlFor="search" md={2}>Search</Label>
+                    <Col md={3}>
+                    <Input type="text" name="search" value={this.state.search} placeholder='search' onChange={this.handleInputChange}></Input>
+                    </Col>
+                    <Button onClick={this.handleSearch}>Search</Button>
+                    <Button onClick={this.clear}>Clear</Button>
                     </FormGroup>
                     <FormGroup row>
-                    <Col md={6}> <Button row name="duration"  onClick={this.setSort}>Sort By Duration</Button></Col>
+                    <Col> <Button row name="salary" onClick={this.setSort}>Sort By Salary</Button></Col>
+                    <Col> <Button row name="duration"  onClick={this.setSort}>Sort By Duration</Button></Col>
+                    <Col> <Button row name="rating" onClick={this.setSort}>Sort By Rating</Button></Col>
                     </FormGroup>
-                    <FormGroup row>
-                    <Col md={6}> <Button row name="rating" onClick={this.setSort}>Sort By Rating</Button></Col>
-                    </FormGroup>
-                    </Form>
+                </Form>
                 {jobs}
             </div>
         );
