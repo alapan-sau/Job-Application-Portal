@@ -14,7 +14,7 @@ class SelectedApplications extends Component{
         super(props);
 		this.state = {
             applist:[],
-            rating:'1',
+            rating:'',
             selectedId:'',
             sortBy:'',
             order:''
@@ -145,11 +145,16 @@ class SelectedApplications extends Component{
 
     submitRating(event){
         event.preventDefault();
+        if(this.state.rating===''){
+            alert("select a valid rating");
+            return;
+        }
         var appid = this.state.selectedId;
         console.log(appid);
         var endpoint = "http://localhost:3000/users/rate/"+appid;
         var data = {};
         data.rating = this.state.rating;
+        console.log(data);
         axios({
             method: "POST",
             url: endpoint,
@@ -158,7 +163,7 @@ class SelectedApplications extends Component{
                 'Content-Type': 'application/json',
             }
         }).then((response) => {
-            // alert(JSON.stringify(response));
+            alert(JSON.stringify(response));
             console.log(response.data);
             this.setState({isModalOpen:false});
             this.getData();
@@ -175,7 +180,7 @@ class SelectedApplications extends Component{
     }
 
     render(){
-
+        console.log(this.state.rating);
         let allApps = this.state.applist;
 
         let Apps = allApps.map((app)=>{
@@ -236,6 +241,7 @@ class SelectedApplications extends Component{
                         <FormGroup>
                             <Label htmlFor="rating"></Label>
                             <Input type="select" id="rating" name="rating" value={this.state.rating} onChange={this.handleInputChange}>
+                            <option value=''>select</option>
                             <option>1</option>
                             <option>2</option>
                             <option>3</option>

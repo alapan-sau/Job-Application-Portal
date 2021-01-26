@@ -13,7 +13,7 @@ class ViewApplications extends Component{
 		this.state = {
             applist:[],
             appid : '',
-            rate:'1',
+            rate:'',
             isModalOpen:false
         };
 
@@ -55,6 +55,10 @@ class ViewApplications extends Component{
 
     submitRating(event){
         event.preventDefault();
+        if(this.state.rate===''){
+            alert("enter valid rating");
+            return;
+        }
         var appid = this.state.appid;
         console.log(appid);
         var endpoint = "http://localhost:3000/jobs/rate/"+appid;
@@ -153,6 +157,7 @@ class ViewApplications extends Component{
                         <FormGroup>
                             <Label htmlFor="rate">Rating</Label>
                             <Input type="select" id="rate" name="rate"  value={this.state.rate} onChange={this.handleInputChange}>
+                            <option value=''>select</option>
                             <option>1</option>
                             <option>2</option>
                             <option>3</option>

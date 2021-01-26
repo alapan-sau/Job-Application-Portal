@@ -249,6 +249,8 @@ class DashboardUser extends Component{
             if(new Date(job.deadline) - new Date(Date.now()) < 0)
                 return null;
 
+            if(job.remPos===0) return null;
+
             let ButtonApply = <Button color='success' id={job._id} onClick={this.toggleModal}>Apply</Button>
             let ButtonApplied = <Button color='primary'>Applied</Button>
             let ButtonFull = <Button color='danger'>Full</Button>

@@ -48,7 +48,7 @@ userRouter.post('/signup', (req, res, next) => {
 // LOGIN as USER
 userRouter.post('/login', passport.authenticate('userLocal'), (req, res) => {
     // req.login();
-    console.log(req.user);
+    // console.log(req.user);
     const token = authenticate.getToken({_id: req.user._id});
     res.statusCode = 200;
     res.setHeader('Content-Type', 'application/json');
@@ -92,7 +92,7 @@ userRouter.route('/rate/:appid')
         console.log(currentRating);
         console.log(req.body.rating);
         newRating = (app.applier.rating*totalRater + Number(req.body.rating))/(totalRater+1);
-        // console.log(newRating);
+        console.log(newRating);
         totalRater = totalRater+1;
         Users.findByIdAndUpdate(app.applier._id,{rating: newRating, totalRaters : totalRater },{new: true})
         .then((user)=>{
@@ -106,8 +106,8 @@ userRouter.route('/rate/:appid')
             .catch((err)=>next(err))
         },(err) => next(err))
         .catch((err)=>next(err))
-    })
-
+    },(err) => next(err))
+    .catch((err)=>next(err))
 });
 
 module.exports = userRouter;
